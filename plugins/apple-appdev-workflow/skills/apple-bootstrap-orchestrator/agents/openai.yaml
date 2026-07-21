@@ -1,0 +1,7 @@
+version: 1
+interface:
+  display_name: Apple Bootstrap Orchestrator
+  short_description: Coordinate broad Apple app bootstrap workflows by sequencing discovery-first intake, bootstrap preflight, generation or adoption, and project handoff.
+  default_prompt: Use $apple-appdev-workflow:apple-bootstrap-orchestrator to run this Apple bootstrap workflow through the bootstrap brigade, start with discovery-first reality checks, coordinate the bootstrap station, and return a structured handoff summary.
+policy:
+  allow_implicit_invocation: true

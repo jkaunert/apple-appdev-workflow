@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: Apple Debug Orchestrator
+  short_description: Coordinate broad Apple runtime diagnosis workflows by sequencing discovery, runtime debugging, validation, and likely-cause analysis into one debug recommendation.
+  default_prompt: Use $apple-appdev-workflow:apple-debug-orchestrator to run this Apple debugging workflow through the debug brigade, start with discovery-first runtime scanning, coordinate the right debug stations, and return a likely root cause, next diagnostic step, and fix path.

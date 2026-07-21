@@ -1,0 +1,44 @@
+{
+  "name": "apple-appdev-workflow",
+  "version": "0.2.0",
+  "description": "Apple iOS and macOS workflow plugin with deterministic hook-native routing.",
+  "author": {
+    "name": "Joshua Kaunert",
+    "url": "https://github.com/jkaunert/apple-appdev-workflow"
+  },
+  "homepage": "https://github.com/jkaunert/apple-appdev-workflow",
+  "repository": "https://github.com/jkaunert/apple-appdev-workflow",
+  "keywords": [
+    "apple",
+    "ios",
+    "macos",
+    "swiftui",
+    "swiftdata",
+    "xcode"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Apple AppDev Workflow",
+    "shortDescription": "Apple app workflow bundle for Codex.",
+    "longDescription": "Orchestrated Codex workflow for bootstrapping, implementing, reviewing, debugging, and releasing Apple platform apps. A trusted UserPromptSubmit hook deterministically selects the top-level workflow owner; explicit $apple-appdev-workflow:<skill> invocation remains the fallback.",
+    "developerName": "Joshua Kaunert",
+    "category": "Coding",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/jkaunert/apple-appdev-workflow",
+    "defaultPrompt": [
+      "Create a new SwiftUI iOS app."
+    ],
+    "privacyPolicyURL": "https://github.com/jkaunert/apple-appdev-workflow/blob/main/docs/PRIVACY_POLICY.md",
+    "termsOfServiceURL": "https://github.com/jkaunert/apple-appdev-workflow/blob/main/docs/TERMS_OF_SERVICE.md",
+    "brandColor": "#4A88FF",
+    "composerIcon": "./assets/apple-appdev-workflow-small.svg",
+    "logo": "./assets/apple-appdev-workflow-logo.png",
+    "screenshots": []
+  },
+  "license": "Apache-2.0"
+}

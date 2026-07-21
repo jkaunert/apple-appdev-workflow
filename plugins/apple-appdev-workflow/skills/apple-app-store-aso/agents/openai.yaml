@@ -1,0 +1,4 @@
+interface:
+  display_name: Apple App Store ASO
+  short_description: Optimize App Store metadata, screenshot messaging, and listing positioning while respecting storefront limits and release context.
+  default_prompt: Use $apple-appdev-workflow:apple-app-store-aso to apply Apple App Store ASO guidance to this release or listing task, generating compliant metadata and screenshot strategy without introducing external tool dependencies.

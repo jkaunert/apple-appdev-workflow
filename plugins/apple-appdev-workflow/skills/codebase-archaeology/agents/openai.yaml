@@ -1,0 +1,4 @@
+interface:
+  display_name: Codebase Archaeology
+  short_description: Reconstruct how a codebase, runtime, or workspace got to its current state across branches, forks, docs, and live surfaces.
+  default_prompt: Use $apple-appdev-workflow:codebase-archaeology to reconstruct how this codebase or system surface got to its current state, identify what was tried, kept, rejected, and still unresolved, and name the current source-of-truth surfaces.

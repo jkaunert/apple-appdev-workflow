@@ -1,0 +1,31 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="16" y1="18" x2="112" y2="110" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4A88FF"/>
+      <stop offset="0.45" stop-color="#6D4BFF"/>
+      <stop offset="1" stop-color="#19C8FF"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="28" y1="28" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EAF5FF" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#B7CBFF" stop-opacity="0.8"/>
+    </linearGradient>
+    <filter id="blur" x="0" y="0" width="128" height="128" filterUnits="userSpaceOnUse">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+  </defs>
+  <rect x="14" y="14" width="100" height="100" rx="28" fill="#0B1220"/>
+  <rect x="14" y="14" width="100" height="100" rx="28" fill="url(#bg)" fill-opacity="0.62"/>
+  <g filter="url(#blur)" opacity="0.55">
+    <circle cx="44" cy="34" r="20" fill="#74B7FF"/>
+    <circle cx="92" cy="42" r="20" fill="#8D68FF"/>
+    <circle cx="84" cy="94" r="22" fill="#27DAFF"/>
+  </g>
+  <rect x="19" y="19" width="90" height="90" rx="24" fill="white" fill-opacity="0.08" stroke="white" stroke-opacity="0.22"/>
+  <path d="M40 40L88 40L88 88L40 88Z" stroke="url(#glow)" stroke-opacity="0.75" stroke-width="3" rx="14"/>
+  <path d="M40 40L64 64L88 40M88 88L64 64L40 88M40 40L40 88M88 40L88 88M40 40L88 40M40 88L88 88" stroke="#DFF4FF" stroke-opacity="0.45" stroke-width="2.6" stroke-linecap="round"/>
+  <rect x="28" y="28" width="20" height="20" rx="6" fill="#F7FBFF" fill-opacity="0.18" stroke="#F5FBFF" stroke-width="3"/>
+  <rect x="80" y="28" width="20" height="20" rx="6" fill="#F7FBFF" fill-opacity="0.18" stroke="#F5FBFF" stroke-width="3"/>
+  <rect x="80" y="80" width="20" height="20" rx="6" fill="#F7FBFF" fill-opacity="0.18" stroke="#F5FBFF" stroke-width="3"/>
+  <rect x="28" y="80" width="20" height="20" rx="6" fill="#F7FBFF" fill-opacity="0.18" stroke="#F5FBFF" stroke-width="3"/>
+  <circle cx="64" cy="64" r="8" fill="#F9FCFF"/>
+</svg>

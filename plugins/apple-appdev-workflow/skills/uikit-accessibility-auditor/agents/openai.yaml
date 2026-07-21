@@ -1,0 +1,4 @@
+interface:
+  display_name: UIKit Accessibility Auditor
+  short_description: Audit or implement focused UIKit accessibility issues with patch-ready fixes for VoiceOver, Dynamic Type, focus, and control semantics.
+  default_prompt: Use $apple-appdev-workflow:uikit-accessibility-auditor to review this UIKit screen or control for focused accessibility issues, apply the necessary fixes, and return the manual verification checklist. Do not treat broad release-claim accessibility audits as direct UIKit-auditor work.

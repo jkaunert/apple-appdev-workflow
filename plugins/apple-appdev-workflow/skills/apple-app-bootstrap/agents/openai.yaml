@@ -1,0 +1,7 @@
+version: 1
+interface:
+  display_name: Apple App Bootstrap
+  short_description: Focused bootstrap station for scaffold execution or adoption analysis after the bootstrap brigade has already scoped the workflow.
+  default_prompt: Use $apple-appdev-workflow:apple-app-bootstrap to execute the scoped Apple bootstrap station work, using the bundle bootstrap assets and returning bootstrap evidence to the brigade.
+policy:
+  allow_implicit_invocation: false

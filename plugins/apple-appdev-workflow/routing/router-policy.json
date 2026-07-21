@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "status": "experimental-host-contract",
+  "pluginName": "apple-appdev-workflow",
+  "topLevelOwner": "apple-appdev-workflow:apple-app-orchestrator",
+  "hostScopes": [
+    "desktop",
+    "xcode-headless",
+    "xcode"
+  ],
+  "domains": [
+    {
+      "id": "apple-appdev",
+      "promptSignals": [
+        "ios",
+        "macos",
+        "swiftui",
+        "swiftdata",
+        "uikit",
+        "appkit",
+        "xcode",
+        "xcodebuild",
+        "testflight",
+        "bundle id",
+        "app store",
+        "core data",
+        "apple app"
+      ],
+      "workspaceFiles": [
+        "Package.swift"
+      ],
+      "workspaceExtensions": [
+        "xcodeproj",
+        "xcworkspace"
+      ],
+      "select": "apple-appdev-workflow:apple-app-orchestrator"
+    }
+  ],
+  "suppression": {
+    "whenExplicitSkillSelected": true,
+    "whenOtherPluginSelected": true
+  },
+  "explicitSelection": {
+    "preserveTopLevelForRoutingScopes": [
+      "domain"
+    ],
+    "suppressTopLevelForRoutingScopes": [
+      "focused"
+    ]
+  },
+  "evidence": {
+    "emitRouteSelection": true
+  },
+  "kernel": {
+    "path": "routing/top-level-owner-kernel.md",
+    "maxBytes": 6000
+  },
+  "workspace": {
+    "maxAncestorDepth": 8
+  }
+}

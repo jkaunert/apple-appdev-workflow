@@ -1,0 +1,4 @@
+interface:
+  display_name: Apple Swift Concurrency Foundations
+  short_description: Design, migrate, and modernize Apple async code with explicit isolation, structured concurrency, and safe Swift 6 settings intake.
+  default_prompt: Use $apple-appdev-workflow:apple-swift-concurrency-foundations to apply Apple Swift Concurrency guidance to this task, choose the correct isolation model, and keep the implementation migration-safe.

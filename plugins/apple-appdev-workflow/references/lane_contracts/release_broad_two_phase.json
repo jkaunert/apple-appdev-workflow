@@ -1,0 +1,125 @@
+{
+  "lane_id": "release_broad_two_phase",
+  "mode": "two_phase_memo_synthesis",
+  "owner": "apple-appdev-workflow:apple-release-orchestrator",
+  "execution": {
+    "phase1_timeout_cap_seconds": 180,
+    "phase1_max_attempts": 2,
+    "phase2_timeout_strategy": "remaining_after_reserve",
+    "phase2_timeout_floor_seconds": 120,
+    "phase2_timeout_cap_seconds": 240,
+    "phase2_timeout_reserve_seconds": 120
+  },
+  "acceptance": {
+    "checker": "check_release_trace.py",
+    "route_label": "apple-release-orchestrator (broad two-phase)",
+    "acceptance_role": "canonical"
+  },
+  "validator": {
+    "required_top_level_owner": "apple-appdev-workflow:apple-app-orchestrator",
+    "contexts": {
+      "lane_local_acceptance": {
+        "require_top_level_owner": true,
+        "top_level_owner_proof": "invocation_envelope"
+      },
+      "app_orchestrated_transcript": {
+        "require_top_level_owner": true,
+        "required_parent_final_skills": [
+          "apple-appdev-workflow:apple-app-orchestrator"
+        ]
+      }
+    }
+  },
+  "runner": {
+    "existing_memo_arg": "release_findings_memo_path",
+    "phase1_recommendation": "The bounded release evidence phase did not produce a reusable findings memo. Inspect phase-1 kickoff drift and transport retries before treating final synthesis as the active blocker.",
+    "phase1_checker_output_fallback": "phase-1 release findings memo missing before synthesis",
+    "phase2_checker_output_fallback": "phase-2 release synthesis missing summary"
+  },
+  "phase1": {
+    "opening_instructions": [
+      "Use $apple-appdev-workflow:apple-release-orchestrator to assess this branch's release readiness in two phases.",
+      "This is phase 1 of 2.",
+      "Emit this literal first route block before any other bundle-authored narration:"
+    ],
+    "route_block": [
+      "Routing: orchestrator-led",
+      "Activated skills: `apple-appdev-workflow:apple-release-orchestrator`, `apple-appdev-workflow:apple-testing-quality-gates`, `apple-appdev-workflow:apple-review-hardening`, `apple-appdev-workflow:apple-manual-validation`, `apple-appdev-workflow:apple-build-release-ops`",
+      "Reviewing the actual release target first, then aggregating validation evidence, blockers, residual risks, and ship recommendation into one brigade summary."
+    ],
+    "post_route_instructions": [
+      "Treat the supplied branch facts and bounded evidence as the entire release record for this phase. Do not inspect repo state beyond this evidence, do not run git or build commands, and do not reopen bundle references, trace templates, or checker-shape docs after the route block.",
+      "Missing manual validation, CI confirmation, or build proof should be carried as explicit gaps instead of triggering more discovery.",
+      "Do not emit a kickoff sentence such as `Routing this as an evidence-only release pass...` or `Using the supplied branch facts...`; after the route block, begin directly with `Release target`.",
+      "Do not emit the final brigade summary in this phase."
+    ],
+    "memo_heading_intro": "Return only a compact release findings memo with exactly these headings:",
+    "memo_headings": [
+      "Release target",
+      "Candidate blockers",
+      "Evidence checked",
+      "Manual-validation gaps",
+      "Release-ops gaps",
+      "Preliminary recommendation"
+    ],
+    "constraints": [
+      "keep Candidate blockers to at most 2 bullets total",
+      "keep Evidence checked to at most 4 bullets total",
+      "keep Manual-validation gaps to at most 2 bullets total",
+      "keep Release-ops gaps to at most 2 bullets total",
+      "keep Preliminary recommendation to exactly 1 bullet using only `ready to ship`, `ready only for narrower distribution`, or `no-go`",
+      "prefer branch-defining runtime/service changes and distribution constraints before docs or low-risk deletions",
+      "do not use markdown links, absolute filesystem paths, or file-reference syntax inside the memo; use short backticked filenames or repo-relative paths only"
+    ]
+  },
+  "memo_schema": {
+    "required_headings": [
+      "Release target",
+      "Candidate blockers",
+      "Evidence checked",
+      "Manual-validation gaps",
+      "Release-ops gaps",
+      "Preliminary recommendation"
+    ]
+  },
+  "phase2": {
+    "opening_instructions": [
+      "Use $apple-appdev-workflow:apple-release-orchestrator to synthesize the final release brigade summary from the memo below.",
+      "This is phase 2 of 2 for an already-scoped release brigade run.",
+      "Emit this exact literal three-line route block before any headings, markdown formatting, or other bundle-authored narration:"
+    ],
+    "route_block": [
+      "Routing: orchestrator-led",
+      "Activated skills: `apple-appdev-workflow:apple-release-orchestrator`, `apple-appdev-workflow:apple-testing-quality-gates`, `apple-appdev-workflow:apple-review-hardening`, `apple-appdev-workflow:apple-manual-validation`, `apple-appdev-workflow:apple-build-release-ops`",
+      "Reviewing the actual release target first, then aggregating validation evidence, blockers, residual risks, and ship recommendation into one brigade summary."
+    ],
+    "post_route_instructions": [
+      "Discovery is already complete for this run. Use only the phase-1 memo below as the findings source for the final summary.",
+      "Do not perform any additional repo, git, build, or validation discovery in this phase.",
+      "Do not reopen bundle references, trace templates, or planning docs.",
+      "Do not emit a kickoff sentence such as `Using apple-appdev-workflow:apple-release-orchestrator...`, `Routing the response ...`, `I'm synthesizing the branch-level release brigade summary...`, `Synthesizing the brigade summary from the supplied release findings only...`, or `Preparing the release brigade summary...`; after the route block, begin directly with `Activated skills`.",
+      "The first non-empty line after the 3-line route block must be exactly `Activated skills`.",
+      "Do not mention evidence-only mode, memo usage, or synthesis instructions in the final answer."
+    ],
+    "final_heading_intro": "After the literal three-line route block, return only the final brigade summary with these headings:",
+    "final_headings": [
+      "Activated skills",
+      "Release scope",
+      "Overall status",
+      "Evidence reviewed",
+      "Manual-validation status",
+      "Release-ops status",
+      "Blockers",
+      "Residual risks",
+      "Recommendation"
+    ],
+    "final_activated_skills_explicit_intro": "In the `Activated skills` section, explicitly name:",
+    "final_activated_skills": [
+      "apple-appdev-workflow:apple-release-orchestrator",
+      "apple-appdev-workflow:apple-testing-quality-gates",
+      "apple-appdev-workflow:apple-review-hardening",
+      "apple-appdev-workflow:apple-manual-validation",
+      "apple-appdev-workflow:apple-build-release-ops"
+    ]
+  }
+}

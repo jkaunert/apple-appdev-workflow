@@ -1,0 +1,4 @@
+interface:
+  display_name: Apple SwiftUI Performance Audit
+  short_description: Audit SwiftUI rendering, invalidation, identity, Observation fan-out, environment churn, layout, and animation cost.
+  default_prompt: Use $apple-appdev-workflow:apple-swiftui-performance-audit to audit this SwiftUI performance problem, identify likely rendering, invalidation, identity, Observation, environment, layout, or animation root causes, and tell me what to measure or change next.

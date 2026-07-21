@@ -1,0 +1,4 @@
+interface:
+  display_name: Fetch Apple Docs
+  short_description: Fetch Apple docs, HIG pages, WWDC transcripts, and Swift-DocC pages via Sosumi when implementation details must be precise.
+  default_prompt: Use $apple-appdev-workflow:fetch-apple-docs rather than ad hoc curl, npx sosumi, or generic web search. Prefer direct Sosumi URLs when possible. If a direct Sosumi path 404s or the Apple page path is unknown, make it clear that $apple-appdev-workflow:fetch-apple-docs is falling back to search, find the correct developer.apple.com page, swap the host to sosumi.ai, and return the best source links.

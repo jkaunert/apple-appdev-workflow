@@ -1,0 +1,115 @@
+{
+  "lane_id": "review_broad_two_phase",
+  "mode": "two_phase_memo_synthesis",
+  "owner": "apple-appdev-workflow:apple-review-orchestrator",
+  "execution": {
+    "phase1_timeout_cap_seconds": 180,
+    "phase1_max_attempts": 2,
+    "phase2_timeout_strategy": "half_budget",
+    "phase2_timeout_floor_seconds": 60,
+    "phase2_timeout_cap_seconds": 240
+  },
+  "acceptance": {
+    "checker": "check_review_trace.py",
+    "route_label": "apple-review-orchestrator (broad two-phase)",
+    "acceptance_role": "canonical"
+  },
+  "validator": {
+    "required_top_level_owner": "apple-appdev-workflow:apple-app-orchestrator",
+    "contexts": {
+      "lane_local_acceptance": {
+        "require_top_level_owner": true,
+        "top_level_owner_proof": "invocation_envelope"
+      },
+      "app_orchestrated_transcript": {
+        "require_top_level_owner": true,
+        "required_parent_final_skills": [
+          "apple-appdev-workflow:apple-app-orchestrator"
+        ]
+      }
+    }
+  },
+  "runner": {
+    "existing_memo_arg": "review_findings_memo_path",
+    "phase1_recommendation": "The bounded findings-collection phase did not produce a reusable candidate findings memo. Tighten phase-1 discovery further before treating synthesis as the active blocker.",
+    "phase1_checker_output_fallback": "phase-1 findings memo missing before synthesis",
+    "phase2_checker_output_fallback": "phase-2 review synthesis missing summary"
+  },
+  "phase1": {
+    "opening_instructions": [
+      "Use $apple-appdev-workflow:apple-review-orchestrator to review only the bounded inline evidence below before commit.",
+      "Emit this literal first route block before any other bundle-authored narration:"
+    ],
+    "route_block": [
+      "Routing: orchestrator-led",
+      "Activated skills: `apple-appdev-workflow:apple-review-orchestrator`",
+      "Reviewing the provided inline evidence first, then aggregating findings, coverage gaps, and residual risk into one brigade summary."
+    ],
+    "post_route_instructions": [
+      "Phase 1 of 2.",
+      "Do not emit the final brigade summary in this phase.",
+      "Treat the supplied evidence as the entire review record. Do not inspect repo state, git history, or run shell commands.",
+      "Read the primary evidence block first. If it supports 1-2 credible candidate findings or a confident no-finding memo, stop immediately and emit the memo.",
+      "Open the secondary evidence block only if the primary block leaves one likely finding genuinely unresolved.",
+      "Do not continue into recommendation writing, residual-risk expansion, repo-wide validation sweeps, or additional discovery once the first supportable memo is available."
+    ],
+    "memo_heading_intro": "Return only a compact candidate findings memo with exactly these headings:",
+    "memo_headings": [
+      "Candidate findings",
+      "Evidence checked",
+      "Open questions"
+    ],
+    "constraints": [
+      "keep Candidate findings to at most 2 bullets total",
+      "keep Evidence checked to at most 2 bullets total",
+      "keep Open questions to at most 1 bullet total",
+      "prefer the first supportable DI / service-construction or fallback-path defect over broader architectural narration",
+      "do not restate whole hunks; summarize only the smallest evidence needed to justify each bullet",
+      "do not use markdown links, absolute filesystem paths, or file-reference syntax inside the memo; use plain text with short backticked filenames or relative paths only"
+    ]
+  },
+  "memo_schema": {
+    "required_headings": [
+      "Candidate findings",
+      "Evidence checked",
+      "Open questions"
+    ]
+  },
+  "phase2": {
+    "opening_instructions": [
+      "Use $apple-appdev-workflow:apple-review-orchestrator to synthesize the final review brigade summary from the memo below before commit.",
+      "This is phase 2 of 2 for an already-scoped review brigade run.",
+      "Emit this exact literal three-line route block before any headings, markdown formatting, or other bundle-authored narration:"
+    ],
+    "route_block": [
+      "Routing: orchestrator-led",
+      "Activated skills: `apple-appdev-workflow:apple-review-orchestrator`, `apple-appdev-workflow:apple-testing-quality-gates`, `apple-appdev-workflow:apple-review-hardening`",
+      "Reviewing the supplied phase-1 memo first, then aggregating findings, coverage gaps, and residual risk into one brigade summary."
+    ],
+    "post_route_instructions": [
+      "Use only the phase-1 memo below as the findings source for the final summary.",
+      "Treat the supplied memo as the entire review record. Do not inspect repo state, git history, or run shell commands.",
+      "Do not perform any additional branch diff or file reads in this phase.",
+      "Do not reopen bundle references, trace templates, or checker-shape docs.",
+      "Do not emit a kickoff sentence such as `Using apple-appdev-workflow:apple-review-orchestrator...`, `Synthesizing the brigade summary from the supplied memo only...`, `Reviewing the memo only...`, or `Preparing the review brigade summary...`; after the route block, begin directly with `Activated skills`.",
+      "Do not mention memo usage, evidence-only mode, or synthesis instructions in the final answer."
+    ],
+    "final_heading_intro": "After the literal three-line route block, return only the final brigade summary with these headings:",
+    "final_headings": [
+      "Activated skills",
+      "Review scope",
+      "Discovery findings",
+      "Overall assessment",
+      "Findings",
+      "Test coverage assessment",
+      "Residual risks",
+      "Recommendation"
+    ],
+    "final_activated_skills_explicit_intro": "In the `Activated skills` section, explicitly name:",
+    "final_activated_skills": [
+      "apple-appdev-workflow:apple-review-orchestrator",
+      "apple-appdev-workflow:apple-testing-quality-gates",
+      "apple-appdev-workflow:apple-review-hardening"
+    ]
+  }
+}

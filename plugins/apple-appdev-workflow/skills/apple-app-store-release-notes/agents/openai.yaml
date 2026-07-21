@@ -1,0 +1,4 @@
+interface:
+  display_name: Apple App Store Release Notes
+  short_description: Generate concise, user-facing App Store “What’s New” notes from real user-visible changes.
+  default_prompt: Use $apple-appdev-workflow:apple-app-store-release-notes to create Apple App Store release notes from the real user-facing changes in this release, filtering out internal work and keeping the bullets concise and benefit-focused.

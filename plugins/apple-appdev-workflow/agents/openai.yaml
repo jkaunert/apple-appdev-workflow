@@ -1,0 +1,6 @@
+interface:
+  display_name: "Apple AppDev Workflow"
+  short_description: "Apple app workflow bundle for Codex."
+  icon_small: "./assets/apple-appdev-workflow-small.svg"
+  icon_large: "./assets/apple-appdev-workflow-logo.png"
+  default_prompt: "Use $apple-appdev-workflow:apple-app-orchestrator to bootstrap, review, debug, or refine an Apple app."

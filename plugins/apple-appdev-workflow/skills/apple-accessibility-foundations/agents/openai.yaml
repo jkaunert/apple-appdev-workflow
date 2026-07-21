@@ -1,0 +1,4 @@
+interface:
+  display_name: Apple Accessibility Foundations
+  short_description: Provide cross-framework accessibility baselines, validation constraints, and release-claim framing inside broader accessibility workflows.
+  default_prompt: Use $apple-appdev-workflow:apple-accessibility-foundations to apply Apple accessibility foundations to this task, coordinate the required framework-specific accessibility auditor, and return cross-framework validation plus release-claim guidance.

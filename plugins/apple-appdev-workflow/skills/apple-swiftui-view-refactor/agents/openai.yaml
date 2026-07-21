@@ -1,0 +1,4 @@
+interface:
+  display_name: Apple SwiftUI View Refactor
+  short_description: Refactor SwiftUI views for stable structure, Observation, identity, modifiers, soft deprecations, and SDK compatibility.
+  default_prompt: Use $apple-appdev-workflow:apple-swiftui-view-refactor to refactor this SwiftUI view to improve structure, state ownership, Observation usage, data-driven identity, modifier shape, soft-deprecation posture, or SDK compatibility while preserving behavior and keeping business logic out of the UI layer.

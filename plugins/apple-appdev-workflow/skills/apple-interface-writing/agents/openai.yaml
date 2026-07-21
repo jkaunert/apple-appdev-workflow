@@ -1,0 +1,4 @@
+interface:
+  display_name: Apple Interface Writing
+  short_description: Write and review end-user interface copy for Apple apps, including errors, alerts, settings, onboarding, buttons, and empty states.
+  default_prompt: Use $apple-appdev-workflow:apple-interface-writing to improve this interface copy for clarity, tone, accessibility, and localization while keeping it appropriate for an Apple app surface.

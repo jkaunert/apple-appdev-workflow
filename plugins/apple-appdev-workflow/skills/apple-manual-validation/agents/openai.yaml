@@ -1,0 +1,4 @@
+interface:
+  display_name: Apple Manual Validation
+  short_description: Plan and report manual device validation, release-doctor checks, pending evidence, and ship blockers for Apple apps.
+  default_prompt: Use $apple-appdev-workflow:apple-manual-validation to plan the manual validation for this Apple app change or release candidate, separate simulator checks from device-only checks, record explicit evidence and pending gaps, and state whether ship readiness is proven, pending, or blocked.

@@ -1,0 +1,4 @@
+interface:
+  display_name: Apple Decision Stress Test
+  short_description: Pressure-test important technical or release decisions by surfacing assumptions, alternatives, objections, failure modes, and reversibility.
+  default_prompt: Use $apple-appdev-workflow:apple-decision-stress-test to stress-test this Apple app decision in isolation, steel-man the current plan, surface hidden assumptions and failure modes, and recommend the strongest practical next move.

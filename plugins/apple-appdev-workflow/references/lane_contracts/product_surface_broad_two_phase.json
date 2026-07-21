@@ -1,0 +1,120 @@
+{
+  "lane_id": "product_surface_broad_two_phase",
+  "mode": "two_phase_memo_synthesis",
+  "owner": "apple-appdev-workflow:apple-product-surface-orchestrator",
+  "execution": {
+    "phase1_timeout_cap_seconds": 300,
+    "phase1_max_attempts": 2,
+    "phase2_timeout_strategy": "half_budget",
+    "phase2_timeout_floor_seconds": 60,
+    "phase2_timeout_cap_seconds": 120
+  },
+  "acceptance": {
+    "checker": "check_product_surface_trace.py",
+    "route_label": "apple-product-surface-orchestrator (broad two-phase)",
+    "acceptance_role": "canonical"
+  },
+  "validator": {
+    "required_top_level_owner": "apple-appdev-workflow:apple-app-orchestrator",
+    "contexts": {
+      "lane_local_acceptance": {
+        "require_top_level_owner": true,
+        "top_level_owner_proof": "invocation_envelope"
+      },
+      "app_orchestrated_transcript": {
+        "require_top_level_owner": true,
+        "required_parent_final_skills": [
+          "apple-appdev-workflow:apple-app-orchestrator"
+        ]
+      }
+    }
+  },
+  "runner": {
+    "existing_memo_arg": "product_surface_findings_memo_path",
+    "phase1_recommendation": "The bounded product-surface discovery phase did not produce a reusable findings memo. Tighten phase-1 surface scope before treating final synthesis as the active blocker.",
+    "phase1_checker_output_fallback": "phase-1 product-surface findings memo missing before synthesis",
+    "phase2_checker_output_fallback": "phase-2 product-surface synthesis missing summary"
+  },
+  "phase1": {
+    "opening_instructions": [
+      "Use $apple-appdev-workflow:apple-product-surface-orchestrator to assess this app's main product surface in two phases.",
+      "This is phase 1 of 2.",
+      "Emit this literal first route block before any other bundle-authored narration:"
+    ],
+    "route_block": [
+      "Routing: orchestrator-led",
+      "Activated skills: `apple-appdev-workflow:apple-product-surface-orchestrator`, `apple-appdev-workflow:apple-design-system-ux`, `apple-appdev-workflow:apple-swiftui-ui-patterns`, `apple-appdev-workflow:apple-interface-writing`",
+      "Inspecting the current product surface first, then producing a design-only recommendation that tightens hierarchy, navigation, empty states, and on-screen copy without editing code in this pass."
+    ],
+    "post_route_instructions": [
+      "Do not emit the final brigade summary in this phase.",
+      "Treat the supplied evidence as the entire product-surface record for this phase.",
+      "Do not inspect repo state, git history, plugin references, bundle templates, or run shell commands.",
+      "Do not reopen product-surface flow docs, trace templates, or output contracts after the route block.",
+      "If the supplied evidence feels incomplete, call that out in Validation and rollout notes; do not widen discovery."
+    ],
+    "memo_heading_intro": "Return only a compact product-surface findings memo with exactly these headings:",
+    "memo_headings": [
+      "Surface scope",
+      "Discovery findings",
+      "Primary surface problem",
+      "Candidate first change",
+      "Validation and rollout notes",
+      "Direct follow-on lanes"
+    ],
+    "constraints": [
+      "keep Discovery findings to at most 4 bullets total",
+      "keep Primary surface problem to at most 2 bullets total",
+      "keep Candidate first change to at most 2 bullets total",
+      "keep Validation and rollout notes to at most 2 bullets total",
+      "keep Direct follow-on lanes to at most 3 numbered items total",
+      "prefer one highest-leverage surface change over a shopping list of UI polish",
+      "focus on navigation, empty-state clarity, CTA hierarchy, and on-screen copy before visual embellishment",
+      "do not use markdown links, absolute filesystem paths, or file-reference syntax inside the memo; use short backticked filenames or repo-relative paths only",
+      "once you have enough evidence to support one main surface recommendation, stop and emit the memo"
+    ]
+  },
+  "memo_schema": {
+    "required_headings": [
+      "Surface scope",
+      "Discovery findings",
+      "Primary surface problem",
+      "Candidate first change",
+      "Validation and rollout notes",
+      "Direct follow-on lanes"
+    ]
+  },
+  "phase2": {
+    "opening_instructions": [
+      "Use $apple-appdev-workflow:apple-product-surface-orchestrator to synthesize the final product-surface brigade summary from the memo below.",
+      "Emit this exact literal three-line route block before any headings, markdown formatting, or other bundle-authored narration:"
+    ],
+    "route_block": [
+      "Routing: orchestrator-led",
+      "Activated skills: `apple-appdev-workflow:apple-product-surface-orchestrator`, `apple-appdev-workflow:apple-design-system-ux`, `apple-appdev-workflow:apple-swiftui-ui-patterns`, `apple-appdev-workflow:apple-interface-writing`",
+      "Inspecting the current product surface first, then producing a design-only recommendation that tightens hierarchy, navigation, empty states, and on-screen copy without editing code in this pass."
+    ],
+    "post_route_instructions": [
+      "Treat the supplied memo as the entire product-surface record. Do not inspect repo state, git history, or run shell commands.",
+      "Do not reopen bundle references, trace templates, or planning docs.",
+      "Do not emit a kickoff sentence such as `Using apple-appdev-workflow:apple-product-surface-orchestrator...`, and do not mention memo usage or synthesis instructions in the final answer."
+    ],
+    "final_heading_intro": "After the literal three-line route block, return only the final brigade summary with these headings:",
+    "final_headings": [
+      "Activated skills",
+      "Surface scope",
+      "Discovery findings",
+      "Surface assessment",
+      "Coordinated recommendations",
+      "Validation and rollout notes",
+      "Direct follow-on lanes"
+    ],
+    "final_activated_skills_explicit_intro": "In the `Activated skills` section, explicitly name:",
+    "final_activated_skills": [
+      "apple-appdev-workflow:apple-product-surface-orchestrator",
+      "apple-appdev-workflow:apple-design-system-ux",
+      "apple-appdev-workflow:apple-swiftui-ui-patterns",
+      "apple-appdev-workflow:apple-interface-writing"
+    ]
+  }
+}

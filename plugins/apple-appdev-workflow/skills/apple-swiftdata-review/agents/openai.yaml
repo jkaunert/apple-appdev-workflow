@@ -1,0 +1,4 @@
+interface:
+  display_name: Apple SwiftData Review
+  short_description: Narrow review and remediation for existing SwiftData code once the persistence scope is already known.
+  default_prompt: Use $apple-appdev-workflow:apple-swiftdata-review for focused existing-code review and remediation after the persistence scope is already known. If the prompt is broad, recommendation-first, or asks about migration approach, rollout risk, data-loss risk, or what should change first, route through $apple-appdev-workflow:apple-persistence-orchestrator instead of self-starting here.

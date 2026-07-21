@@ -1,0 +1,336 @@
+# Apple Skill Orchestration
+
+This reference defines how `apple-appdev-workflow:apple-app-orchestrator` should drive the rest of the bundle.
+
+## Important limitation
+- Codex skills are instruction bundles, not callable functions.
+- "Automatic subskill use" in Codex means the orchestrator loads and follows the relevant subskill instructions in the same task without waiting for the user to name each skill.
+
+## Canonical plugin skill identity
+- Plugin-contributed skills are canonically referenced by their fully qualified ids, for example `apple-appdev-workflow:apple-release-orchestrator`.
+- Prompt/control plane uses `$<plugin-name>:<skill-name>` for explicit user-prompt invocation, generated prompt text, and UI chips. For this bundle, that means `$apple-appdev-workflow:<skill>`.
+- Output/evidence plane uses `<plugin-name>:<skill-name>` without `$` in route blocks, final `Activated skills` sections, validation contracts, scoring artifacts, and model-visible routing prose. For this bundle, that means `apple-appdev-workflow:<skill>`.
+- The `$` and non-`$` forms resolve to the same skill identity but are not interchangeable surfaces.
+- Bare plugin skill names are compatibility and canary inputs only. They are not authoritative route-contract proof for acceptance scoring.
+- In authoritative route templates, brigade contracts, and validation artifacts, use fully qualified ids for both the parent app owner and the matched domain owner.
+- When a plugin-contributed skill is already fully qualified, do not prepend the plugin namespace again. `apple-appdev-workflow:fetch-apple-docs` is the canonical docs-specialist id; `apple-appdev-workflow:apple-appdev-workflow:fetch-apple-docs` is malformed.
+
+## Control and return ownership
+- Treat orchestration as two separate control problems:
+  - route selection: which downstream skill or brigade is responsible for the next slice of work
+  - final-answer ownership: which layer is allowed to emit the final user-facing answer
+- In broad orchestrator-led workflows, `apple-appdev-workflow:apple-app-orchestrator` owns:
+  - the first bundle-controlled structured routing block
+  - final user-facing answer ownership
+  - the decision to activate a brigade, station, or specialist lane
+- When a brigade lane defines a literal first routing block in its trace template, parent route ownership is satisfied only by surfacing that exact brigade block as the first visible bundle-authored block. Do not substitute a parent-only block, a hybrid parent-plus-brigade block, or setup prose ahead of it.
+- Domain expediters such as `apple-appdev-workflow:apple-bootstrap-orchestrator`, `apple-appdev-workflow:apple-review-orchestrator`, `apple-appdev-workflow:apple-debug-orchestrator`, and `apple-appdev-workflow:apple-release-orchestrator` own:
+  - domain sequencing
+  - domain evidence aggregation
+  - required brigade section shape for their domain
+- Domain expediters do not replace the parent route block or final-answer ownership when they were activated by `apple-appdev-workflow:apple-app-orchestrator`.
+- Specialist stations such as `apple-appdev-workflow:apple-interface-writing`, `apple-appdev-workflow:fetch-apple-docs`, `apple-appdev-workflow:apple-swiftdata-foundations`, `apple-appdev-workflow:apple-observability-diagnostics`, and similar narrow lanes own:
+  - focused evidence gathering
+  - lane-local recommendations
+  - trace steps only when a lane-specific compliance rule requires visibility
+- Specialist stations do not own the final user-facing answer in an orchestrator-led workflow.
+- When handing off to a brigade or station, make the control boundary explicit in the instructions you follow:
+  - activate the named skill for evidence, analysis, or domain sequencing
+  - keep final-answer ownership with the parent orchestrator unless the user directly invoked the downstream skill
+- Explicit skill naming should use canonical plugin ids when the bundle needs deterministic routing or route-contract proof. Do not turn every broad workflow into chip-like visible skill narration. Use `$<plugin-name>:<skill-name>` for prompt/control-plane invocation, and `<plugin-name>:<skill-name>` without `$` for route-contract output and model-visible routing prose.
+- When `apple-appdev-workflow:apple-app-orchestrator` activates a brigade, the final `Activated skills` section must preserve both the parent owner and the brigade owner. A brigade-scoped first route block is allowed, but brigade-only final `Activated skills` are not.
+- For brigade lanes with literal route templates, do not prepend `I'm running this as...`, `I'm treating this as...`, `Reviewing ...`, `Mode: ...`, or a parent-only `Activated skills` line before the brigade block. Those are contract failures, not acceptable parent-owned variants.
+
+## Default orchestration rules
+- Start broad Apple app requests with `apple-appdev-workflow:apple-app-orchestrator`.
+- `apple-appdev-workflow:apple-app-orchestrator` is the mandatory top-level entrypoint when the task is broad enough to activate multiple Apple bundle skills.
+- Do not let specialist skills self-start broad multi-skill workflows unless the user explicitly asks to bypass the orchestrator.
+- In orchestrator-led workflows, do not let specialist skills emit the first structured routing block or own the final user-facing answer. They feed evidence into the parent route block and final summary instead.
+- Treat `apple-appdev-workflow:apple-discovery-first` as the bundle-wide reality-discovery phase for orchestration, not just an implementation helper.
+- Use discovery findings to shape routing, activated skills, acceptance criteria, and risk framing whenever meaningful local context exists.
+- For true greenfield work with no project code yet, discovery is lighter but still required: inspect target-path state, repo presence, support-matrix fit, and input completeness before proceeding.
+- Do not treat an empty ambient directory or user-referenced path as sufficient proof of greenfield when the same Codex project contains a single clear nested Apple repo that matches the follow-on request.
+- For non-bootstrap follow-on requests, discovery must attempt child or sibling repo recovery inside the same Codex project before collecting scaffold-critical inputs or suggesting a second scaffold.
+- Secondary orchestrators inherit the discovery-first principle; do not narrow discovery into a single station that only one brigade owns.
+- Load `apple-appdev-workflow:fetch-apple-docs` when the task depends on current Apple documentation, HIG guidance, WWDC transcripts, forum context, or external Swift-DocC pages.
+- Prefer `apple-appdev-workflow:fetch-apple-docs` over generic web search when the underlying need is current Apple documentation or official guidance.
+- Whenever current Apple docs are consulted, make `apple-appdev-workflow:fetch-apple-docs` visible before the first Apple-doc lookup step appears in the trace.
+- When the user explicitly invokes `$apple-appdev-workflow:fetch-apple-docs`, selects the docs skill chip, or the primary requested outcome is to explain something from current Apple documentation, include `apple-appdev-workflow:fetch-apple-docs` in the first visible routing block rather than waiting for a later `Activated skills` recap.
+- In that docs-first case, do not let discovery or any downstream station perform the first Apple-doc lookup step before the visible `apple-appdev-workflow:fetch-apple-docs` activation.
+- Do not let a final `Activated skills` line retroactively establish Apple-doc routing after a generic search or unlabeled Sosumi transport already happened.
+- Treat raw search against `developer.apple.com` or `sosumi.ai`, including `site:sosumi.ai ...`, as a routing failure unless the immediately preceding trace step emitted the explicit `apple-appdev-workflow:fetch-apple-docs` path-discovery line or fallback-to-search line.
+- Within `apple-appdev-workflow:fetch-apple-docs`, prefer MCP first, then Sosumi CLI, then direct Sosumi HTTP. Use search only to discover an unknown Apple page path or after direct fetch paths proved unavailable or insufficient.
+- Treat prompts framed as design, proposal, recommendation, schema modeling, or migration-approach work as non-mutating design passes unless the user explicitly asks to scaffold, wire, or implement code in the same turn.
+- Treat broad app-structure or architecture-assessment requests, including prompts like `assess this SwiftUI app's architecture`, `review this app's architecture`, or `what should change first`, as highest-priority architecture-brigade triggers when meaningful local context exists.
+- Route those broad architecture-assessment prompts through `apple-appdev-workflow:apple-architecture-orchestrator`. Do not let `apple-appdev-workflow:apple-discovery-first`, `apple-appdev-workflow:apple-architecture-design`, or another specialist lane self-start the visible run.
+- For those broad architecture-assessment prompts, the first bundle-authored progress update after any tolerated host kickoff sentence must be the literal route block from `references/architecture-assessment-trace-template.md`. Do not allow discovery narration, test/build status, or provisional findings to appear before that block.
+- For those broad architecture-assessment prompts, do not let the run begin with `Using ...`, `I'm reviewing ...`, or checklist-style progress bullets in place of the route block. Those are route failures, not acceptable variants.
+- For those broad architecture-assessment prompts, once the architecture brigade is active, keep the first visible route block architecture-brigade-scoped rather than narrating `apple-appdev-workflow:apple-app-orchestrator` plus the brigade together.
+- For those broad architecture-assessment prompts, when an `.xcodeproj` or `.xcworkspace` is present, use `XcodeBuildMCP` as the default control plane for project discovery, scheme listing, and test execution. Do not normalize raw `xcodebuild` in this lane unless an MCP availability gap was made explicit first.
+- For broad architecture work, `apple-appdev-workflow:apple-architecture-orchestrator` is the sole final owner at the domain layer. `apple-appdev-workflow:apple-discovery-first`, `apple-appdev-workflow:apple-architecture-design`, and optional specialists return evidence upward only.
+- For architecture-brigade non-mutating analysis, design, or recommendation work, do not let a station-local findings dump, architecture wrap-up, or doc explanation replace the brigade summary.
+- When a brigade orchestrator is activated by `apple-appdev-workflow:apple-app-orchestrator`, treat the brigade output contract as a required internal summary shape that the parent must preserve in the final response. Do not let brigade-local reasoning become a separate visible final answer that bypasses the parent.
+- When a specialist lane is activated by either the parent orchestrator or a brigade orchestrator, treat its result as evidence returned upward. Do not let the specialist's local wrap-up stand as the final user-facing answer unless the user directly invoked that specialist lane.
+- For architecture-assessment smokes and other trace-sensitive validation, prefer `assess` or `evaluate` wording over bare `review` phrasing when the intent is architecture recommendation rather than findings-first branch review. This avoids accidental routing into platform-level review formatting that can obscure orchestrator trace compliance.
+- For natural broad architecture-assessment prompts, treat `assess`, `evaluate`, `app architecture`, `app structure`, `ownership seams`, and `what should change first` as stronger routing signals than any narrower discovery-only or architecture-only trigger that might otherwise self-start.
+- Broad architecture prompts may still enter through `apple-appdev-workflow:apple-app-orchestrator`, but the visible domain route should become `apple-appdev-workflow:apple-architecture-orchestrator` rather than remaining parent-owned.
+- Route broad app creation, scaffolding, and adoption work through `apple-appdev-workflow:apple-bootstrap-orchestrator`.
+- Route broad branch-diff, precommit, and premerge review work through `apple-appdev-workflow:apple-review-orchestrator`.
+- When a broad review route is triggered, keep `apple-appdev-workflow:apple-review-orchestrator` visible in the first routing block rather than allowing the parent orchestrator or station set alone to imply review ownership later.
+- Route repo/worktree/branch ambiguity, dirty-state classification, source-pair confusion, checkpoint sequencing, and protected-baseline risk through `apple-appdev-workflow:git-workflow-specialist` as a read-only support specialist. It returns git workflow evidence to the active domain lane; it does not replace review, release, bootstrap, debug, or implementation ownership.
+- Route broad debugging, reproduction, and likely-cause diagnosis work through `apple-appdev-workflow:apple-debug-orchestrator`.
+- Load `apple-appdev-workflow:apple-app-bootstrap` as the primary bootstrap station when the task is about creating a new Apple app, scaffolding a SwiftUI starter, or adopting an existing Xcode project or Swift package into the Apple bundle workflow.
+- Auto-route bootstrap work for common request shapes such as:
+  - create a new iOS app
+  - create a new macOS app
+  - scaffold a SwiftUI app
+  - bootstrap an Apple app
+  - adopt this existing Xcode project
+  - adopt this existing Swift package
+  - start a new Apple app with optional packages
+- `apple-appdev-workflow:apple-bootstrap-orchestrator` should start broad bootstrap work with a discovery-first scan, then coordinate `apple-appdev-workflow:apple-app-bootstrap`, then hand off to downstream design, architecture, implementation, testing, and MCP-backed validation as needed.
+- In broad bootstrap progress updates, do not reduce the visible route to `apple-appdev-workflow:apple-app-orchestrator` plus `apple-appdev-workflow:apple-app-bootstrap`; keep the bootstrap-expediter layer visible when a station must be named for compliance.
+- For broad bootstrap first-route output, use the route shape in `references/bootstrap-brigade-trace-template.md`: the block is bootstrap-brigade-scoped, names `apple-appdev-workflow:apple-bootstrap-orchestrator` and `apple-appdev-workflow:apple-app-bootstrap`, omits `apple-appdev-workflow:apple-app-orchestrator`, and keeps a bootstrap discovery, input-confirmation, or preflight sentence instead of a custom `Scope:` or `Mode:` line.
+- `apple-appdev-workflow:apple-review-orchestrator` should start broad review work with a discovery-first branch scan, then coordinate `apple-appdev-workflow:apple-testing-quality-gates` plus `apple-appdev-workflow:apple-review-hardening`, and then add specialist review stations only when the diff requires them.
+- `apple-appdev-workflow:apple-debug-orchestrator` should start broad debug work with a discovery-first runtime scan, then coordinate the correct runtime debugger, add testing support when validation gaps matter, and then add specialist debug stations only when the evidence requires them.
+- For broad review work, the default diff target should be the tracking branch when upstream exists; use `main...HEAD` only for integration, promotion, release scope, or when no upstream exists.
+- Load `apple-appdev-workflow:apple-discovery-first` before implementation, and also before orchestration decisions when a repository, project, release branch, generated app, or target path can be inspected meaningfully.
+- Load `apple-appdev-workflow:git-workflow-specialist` when discovery shows branch/worktree state is itself blocking safe progress, especially before branch switches, cleanup recommendations, source-pair evidence, packaging, or commit sequencing.
+- Load `apple-appdev-workflow:apple-architecture-design` when the task changes:
+  - module boundaries
+  - protocols
+  - DI
+  - navigation
+  - concurrency model
+- Load `apple-appdev-workflow:apple-design-system-ux` when the task changes:
+  - SwiftUI views
+  - layout
+  - interaction states
+- Route broad product-surface review, broad surface redesign, and multi-skill surface-coherence work through `apple-appdev-workflow:apple-product-surface-orchestrator`.
+- Treat prompts about making the main product surface feel more coherent, intentional, or production-ready across hierarchy, navigation, empty states, copy, and presentation as brigade-owned even when the implementation surface is mainly SwiftUI.
+- For non-mutating product-surface validation and other trace-sensitive checks, prefer `review`, `recommend`, or `what should change first` wording over bare `redesign` prompts.
+- Load `apple-appdev-workflow:apple-swiftui-ui-patterns` when the task needs SwiftUI shell, screen, component, navigation, sheet, form, focus, search, overlay, or media composition patterns.
+- Auto-route SwiftUI composition work to `apple-appdev-workflow:apple-swiftui-ui-patterns` for common request shapes such as:
+  - build this SwiftUI screen
+  - wire tabs or app shell
+  - NavigationStack or sheet routing
+  - settings screen, form, searchable, split view, focus handling, overlay, or empty state UI
+- Load `apple-appdev-workflow:apple-swiftui-view-refactor` when the task is primarily about cleaning up or restructuring an existing SwiftUI view file.
+- Auto-route SwiftUI refactor work to `apple-appdev-workflow:apple-swiftui-view-refactor` for common request shapes such as:
+  - clean up this SwiftUI view
+  - refactor this view
+  - split this large body
+  - remove ViewModel
+  - Observation cleanup
+  - stable view tree
+- Load `apple-appdev-workflow:apple-interface-writing` when end-user copy inside product surfaces changes materially.
+- Auto-route interface-copy work to `apple-appdev-workflow:apple-interface-writing` for common request shapes such as:
+  - rewrite this error message
+  - improve button text
+  - review UX copy
+  - write empty state, onboarding copy, settings description, alert wording, or confirmation dialog copy
+- Load `apple-appdev-workflow:apple-liquid-glass` when the task adopts or reviews Liquid Glass in SwiftUI.
+- Auto-route Liquid Glass work to `apple-appdev-workflow:apple-liquid-glass` for common request shapes such as:
+  - Liquid Glass
+  - glassEffect
+  - GlassEffectContainer
+  - iOS 26 glass
+  - glass button or morphing glass transition
+- For broad product-surface work, `apple-appdev-workflow:apple-product-surface-orchestrator` is the sole final owner. Use `apple-appdev-workflow:apple-design-system-ux` for cross-cutting hierarchy, token, adaptive-layout, and interaction-state evidence, and use the other UI specialists only for lane-local evidence returned upward.
+- For narrow product-surface asks, direct routing to `apple-appdev-workflow:apple-design-system-ux`, `apple-appdev-workflow:apple-swiftui-ui-patterns`, `apple-appdev-workflow:apple-swiftui-view-refactor`, `apple-appdev-workflow:apple-interface-writing`, or `apple-appdev-workflow:apple-liquid-glass` is acceptable when the task stays inside that specialist lane and does not require multi-skill surface coordination.
+- Route broad persistence review, migration strategy, coexistence planning, and rollout or data-loss risk framing through `apple-appdev-workflow:apple-persistence-orchestrator`.
+- For broad persistence work, `apple-appdev-workflow:apple-persistence-orchestrator` is the sole final owner. Use `apple-appdev-workflow:apple-swiftdata-foundations` for cross-cutting SwiftData design and migration evidence, and use `apple-appdev-workflow:apple-swiftdata-review` and `apple-appdev-workflow:apple-core-data-expert` only for lane-local evidence returned upward.
+- When a prompt mentions SwiftData models, migration, or schema shape together with rollout risk, data-loss risk, coexistence, or recommendation-first framing, brigade-owned broad persistence routing takes precedence over the automatic `apple-appdev-workflow:apple-swiftdata-foundations` trigger.
+- When a broad persistence review explicitly targets an existing SwiftData model, migration approach, or current SwiftData code path, `apple-appdev-workflow:apple-swiftdata-review` is mandatory alongside `apple-appdev-workflow:apple-swiftdata-foundations`; brigade routing is incomplete without it.
+- For trace-sensitive, non-mutating persistence validation, prefer `review`, `recommend`, or `what should change first` wording over bare `design` prompts.
+- For narrow persistence asks, direct routing to `apple-appdev-workflow:apple-swiftdata-foundations`, `apple-appdev-workflow:apple-swiftdata-review`, or `apple-appdev-workflow:apple-core-data-expert` is acceptable when the task stays inside that specialist lane and does not require multi-station persistence coordination.
+- Load `apple-appdev-workflow:apple-swiftdata-foundations` when the task changes SwiftData schemas, model containers, contexts, queries, migrations, history, CloudKit sync, or SwiftData/Core Data coexistence strategy.
+- Do not let that automatic SwiftData load rule override brigade-owned broad persistence review when rollout risk, data-loss risk, coexistence, or recommendation-first framing is also present.
+- Auto-route SwiftData implementation work to `apple-appdev-workflow:apple-swiftdata-foundations` for common request shapes such as:
+  - SwiftData
+  - @Model, @Query, ModelContainer, ModelContext, FetchDescriptor
+  - SchemaMigrationPlan, VersionedSchema, HistoryDescriptor
+  - CloudKit sync, persistent history, #Unique, #Index
+- Load `apple-appdev-workflow:apple-swiftdata-review` when the task is primarily about reviewing or fixing existing SwiftData code for correctness or migration risk.
+- Auto-route SwiftData review work to `apple-appdev-workflow:apple-swiftdata-review` for common request shapes such as:
+  - review SwiftData
+  - fix SwiftData
+  - predicate crash
+  - empty fetch or data not saving
+  - missing delete rule or @Query misuse
+  - migration bug or data loss risk
+- Load `apple-appdev-workflow:apple-core-data-expert` when the task changes or reviews existing Core Data stacks, contexts, fetches, migrations, history, batch operations, or CloudKit behavior.
+- Auto-route Core Data work to `apple-appdev-workflow:apple-core-data-expert` for common request shapes such as:
+  - Core Data
+  - NSPersistentContainer, NSManagedObjectContext, NSManagedObject
+  - NSFetchRequest, NSFetchedResultsController
+  - NSPersistentCloudKitContainer
+  - batch delete, persistent history tracking, Core Data migration, Core Data threading, Core Data performance
+- Load `apple-appdev-workflow:apple-app-store-aso` when the task changes App Store metadata, screenshot strategy, or storefront positioning.
+- Auto-route App Store listing work to `apple-appdev-workflow:apple-app-store-aso` for common request shapes such as:
+  - App Store metadata
+  - ASO or optimize listing
+  - subtitle, keywords, promo text, description
+  - screenshot strategy
+  - store listing review or competitive analysis
+- Load `apple-appdev-workflow:apple-app-store-release-notes` when the task needs App Store “What’s New” text.
+- Auto-route storefront release-note work to `apple-appdev-workflow:apple-app-store-release-notes` for common request shapes such as:
+  - What’s New
+  - release notes
+  - App Store changelog
+  - generate changelog
+  - summarize user-visible changes
+  - notes since last tag
+- Load `apple-appdev-workflow:apple-decision-stress-test` only when the user explicitly asks for a narrow isolated critique/comparison/challenge pass.
+- Do not auto-route broad architecture, release, rollout, migration, or go/no-go workflows into `apple-appdev-workflow:apple-decision-stress-test`; keep those lanes owned by their domain orchestrators and recommend a separate isolated follow-up when challenge-review is still wanted.
+- Load `apple-appdev-workflow:apple-observability-diagnostics` when the task changes critical journeys, diagnostics, structured logging, analytics quality, crash breadcrumbs, or rollout monitoring expectations.
+- Auto-route observability work for common request shapes such as:
+  - observability
+  - diagnostics
+  - logging
+  - telemetry
+  - analytics
+  - breadcrumbs
+  - monitor rollout
+  - instrument this flow
+  - crash context
+- Load `apple-appdev-workflow:apple-manual-validation` when the task asks for manual QA, release-doctor checks, device validation, pre-ship checklists, or other focused manual-evidence collection.
+- Auto-route manual validation work for common request shapes such as:
+  - manual QA
+  - manual validation
+  - device validation
+  - release doctor
+  - pre-ship checklist
+  - test on device
+- Route `final validation`, `ship readiness`, release go/no-go, and other broad release-readiness workflows through `apple-appdev-workflow:apple-app-orchestrator` first, then hand off to `apple-appdev-workflow:apple-release-orchestrator`.
+- When a prompt mixes release and review vocabulary, explicit release outcome language wins. `ready to ship`, `release readiness`, `final validation`, `release doctor`, and `go/no-go` should route to `apple-appdev-workflow:apple-release-orchestrator` even if the same sentence also says `review this branch` or `audit this diff`.
+- Treat requests such as `fix the review blockers`, `fix the release blockers`, `clear the blockers so this can ship`, or `move this from prototype to ship-candidate` as release-coupled implementation work: keep them orchestrator-led, let implementation stations do the code changes, and let `apple-appdev-workflow:apple-release-orchestrator` own the final readiness call.
+- Do not let release-coupled implementation or release-readiness work silently redefine the target from the user’s broad app-level or branch-level request to a narrower `slice` unless that narrower scope was explicitly requested or already documented in discovered project context.
+- Route broad branch-diff review, precommit review, and findings-first bug or regression review through `apple-appdev-workflow:apple-app-orchestrator` first, then hand off to `apple-appdev-workflow:apple-review-orchestrator`.
+- In those broad review cases, do not let `apple-appdev-workflow:apple-app-orchestrator` plus `apple-appdev-workflow:apple-testing-quality-gates` or `apple-appdev-workflow:apple-review-hardening` stand in for a visible `apple-appdev-workflow:apple-review-orchestrator` handoff. If the review brigade owner never becomes visible, treat the route as incomplete.
+- If a request mixes branch-diff evidence with release-readiness, ship/no-ship, final-validation, or go/no-go framing, route through `apple-appdev-workflow:apple-release-orchestrator` instead of `apple-appdev-workflow:apple-review-orchestrator`. The supplied diff remains release evidence, not a review-owner override.
+- Treat `Run a release-readiness review for this branch and tell me if we are actually ready to ship` as the canonical mixed-intent example: it is a release-lane prompt, not a review-lane prompt.
+- Route broad runtime debugging, reproduction, and likely-cause diagnosis through `apple-appdev-workflow:apple-app-orchestrator` first, then hand off to `apple-appdev-workflow:apple-debug-orchestrator`.
+- If the prompt says the supplied evidence is the entire debugging record and forbids repo/build/simulator work, treat the run as an evidence-only broad debug pass: keep visible ownership with the debug brigade and emit the parent-owned debug summary as soon as the required sections can be filled from the supplied evidence.
+- `apple-appdev-workflow:apple-review-orchestrator` should always load `apple-appdev-workflow:apple-testing-quality-gates` and `apple-appdev-workflow:apple-review-hardening` unless the user explicitly narrows the request.
+- `apple-appdev-workflow:apple-release-orchestrator` should always load `apple-appdev-workflow:apple-manual-validation`, `apple-appdev-workflow:apple-testing-quality-gates`, `apple-appdev-workflow:apple-review-hardening`, and `apple-appdev-workflow:apple-build-release-ops` unless the user explicitly narrows the request.
+- In a release-readiness pass, downstream review or hardening findings must be absorbed into release sections such as `Evidence reviewed`, `Blockers`, and `Residual risks`; they must not change the top-level route into a review-shaped answer.
+- `apple-appdev-workflow:apple-debug-orchestrator` should always activate the correct runtime station for the target platform and should add `apple-appdev-workflow:apple-testing-quality-gates` whenever missing repro coverage or validation gaps materially affect the diagnosis.
+- In an evidence-only broad debug pass, missing coverage or missing runtime reproduction proof should normally remain inside `Validation gaps` rather than triggering extra stations purely to restate that the evidence is incomplete.
+- Route broad accessibility audits, mixed-stack accessibility review, and accessibility release-claim evaluation through `apple-appdev-workflow:apple-app-orchestrator` first, then hand off to `apple-appdev-workflow:apple-accessibility-orchestrator`.
+- `apple-appdev-workflow:apple-accessibility-orchestrator` must activate `apple-appdev-workflow:apple-accessibility-foundations` and exactly the framework auditors needed for the reviewed layers.
+- Load `apple-appdev-workflow:apple-accessibility-foundations` whenever UI code, accessibility behavior, audits, or release-claim evaluation are in scope.
+- Load exactly the framework-specific accessibility auditors needed for changed layers:
+  - `apple-appdev-workflow:swiftui-accessibility-auditor`
+  - `apple-appdev-workflow:uikit-accessibility-auditor`
+  - `apple-appdev-workflow:appkit-accessibility-auditor`
+- For broad accessibility audits, mixed-stack UI work, or release-claim evaluation, `apple-appdev-workflow:apple-accessibility-orchestrator` is the sole final owner. Use `apple-appdev-workflow:apple-accessibility-foundations` for cross-framework constraints and release-claim framing, and use the framework auditors only for detailed findings and patch guidance returned upward as evidence.
+- Treat prompts such as `audit this ... before release`, `can we safely claim accessibility support`, `ship-readiness`, or similar accessibility go/no-go framing as brigade-owned even when only one UI framework is named.
+- For those broad release-audit prompts, do not let a framework auditor self-start the visible run just because the implementation surface is all UIKit, all SwiftUI, or all AppKit. Route through `apple-appdev-workflow:apple-accessibility-orchestrator` first.
+- For narrow framework-specific accessibility asks, direct routing to the matching framework auditor is acceptable only when the prompt stays at the framework-audit lane and does not ask for accessibility claim or release-readiness judgment.
+- Do not escalate a direct framework-specific accessibility audit into `apple-appdev-workflow:apple-accessibility-foundations` solely because the user says `before release`; reserve foundations ownership for broad accessibility review, mixed-stack work, or explicit release-claim evaluation, and reserve brigade ownership for broad release-audit or support-claim framing.
+- Load `apple-appdev-workflow:apple-feature-implementation` for code changes.
+- When a standalone scaffold reports `legacy-codex-dev` and already created `dev` and `codex/dev`, require follow-on feature implementation to branch from `codex/dev`; do not treat a direct `main` -> `codex/<topic>` shortcut as acceptable ancestry.
+- Load `apple-appdev-workflow:apple-runtime-debugger-ios` for iOS simulator runtime reproduction, screenshots, logs, or UI-state inspection.
+- Auto-route iOS runtime debugging requests for common shapes such as:
+  - run on simulator
+  - inspect iOS UI
+  - capture simulator logs
+  - reproduce iOS runtime bug
+- Load `apple-appdev-workflow:apple-runtime-debugger-macos` for macOS launch/runtime diagnosis, logs, screenshots, or app-state inspection.
+- Auto-route macOS runtime debugging requests for common shapes such as:
+  - run macOS app
+  - debug macOS runtime
+  - capture macOS logs
+  - reproduce macOS runtime bug
+- Load `apple-appdev-workflow:apple-swiftui-performance-audit` for SwiftUI performance symptoms, hangs, hitches, and runtime update analysis.
+- Auto-route SwiftUI performance work for common request shapes such as:
+  - slow SwiftUI
+  - janky scrolling
+  - high CPU or memory
+  - layout thrash
+  - hang or hitch
+  - Instruments
+- Load `apple-appdev-workflow:apple-swift-concurrency-foundations` when async or await adoption, actor or Sendable boundaries, task structure, callback bridging, cancellation, async streams, or Swift 6 concurrency migration are in scope.
+- Auto-route concurrency implementation work to `apple-appdev-workflow:apple-swift-concurrency-foundations` for common request shapes such as:
+  - use Swift Concurrency
+  - convert to async or await
+  - fix Sendable or actor isolation
+  - fix MainActor issues
+  - bridge callbacks or continuations
+  - adopt strict concurrency or Swift 6 migration
+- Load `apple-appdev-workflow:apple-swift-concurrency-review` for diagnostics-heavy, review-first, or hotspot concurrency work.
+- Auto-route concurrency review work to `apple-appdev-workflow:apple-swift-concurrency-review` for common request shapes such as:
+  - review concurrency
+  - fix concurrency warnings or compiler errors
+  - investigate data races or thread safety
+  - review Task.detached, reentrancy, cancellation, continuations, or async streams
+- Load `apple-appdev-workflow:apple-swift-testing-foundations` when writing unit or integration tests, migrating XCTest suites, fixing flaky shared-state tests, or organizing tests with parameterization, tags, or traits.
+- Auto-route test work to `apple-appdev-workflow:apple-swift-testing-foundations` for common request shapes such as:
+  - add tests or add coverage
+  - write or modernize unit or integration tests
+  - migrate XCTest
+  - fix flaky or failing tests
+  - parameterize tests
+  - add tags or traits
+  - review tests, doubles, fixtures, or async waiting patterns
+- Load `apple-appdev-workflow:apple-testing-quality-gates` before concluding code tasks.
+- When release confidence depends on hardware or human validation, pair `apple-appdev-workflow:apple-testing-quality-gates` with `apple-appdev-workflow:apple-manual-validation`.
+- Load `apple-appdev-workflow:apple-review-hardening` for high-risk, security, privacy, or pre-release work.
+- Load `apple-appdev-workflow:apple-build-release-ops` for archive, signing, release-candidate, TestFlight, CI gate, rollout, or release requests.
+
+## Orchestrator output requirements
+- Begin the first bundle-controlled structured routing block with `Routing: orchestrator-led`.
+- When a lane-specific trace template defines the first progress block, emit that block before any other bundle-authored substantive narration. If the host/runtime prepends one generic kickoff sentence first, treat it as host-layer noise and emit the template block immediately after it.
+- State which subskills were activated.
+- State why each subskill was activated.
+- Preserve a concise execution order.
+- Keep validation and release gates attached to acceptance criteria.
+- Make it explicit that the pass was orchestrator-led.
+- For orchestrator-led progress updates, describe the work rather than naming human-facing skill display names in the running narration.
+- Keep explicit skill naming in the final `Activated skills` section unless a specific station must be named before a transport or lookup step to establish compliance.
+- If progress narration must name a station for compliance, prefer a backticked skill slug rather than the human-facing display name.
+- For orchestrator-led runs, the first bundle-controlled structured progress update should make routing visible with a compact trace such as `Routing: orchestrator-led` and `Activated skills: ...` when early skill naming is required. Do not emit another substantive lead-in before that block. If a host/runtime build prepends a short generic kickoff sentence first, treat it as host-layer noise rather than a route failure.
+- For orchestrator-led architecture-assessment runs, do not emit any additional bundle-authored progress update before that route block. Interim discovery, test, or repo-shape narration belongs only after the required first block is visible.
+- Do not use first-person skill narration such as `I'm using Apple Discovery First...` in orchestrator-led runs.
+- For code-changing feature work, state which tests were added or updated, what validation ran, and whether the final branch-diff review is complete.
+- For broad non-mutating design work, use a brigade summary in this exact section order: `Routing`, `Activated skills`, `Design scope`, `Discovery findings`, `Recommended design`, `Migration and rollout implications`, `Risks`, `Next implementation entry points`.
+- For broad non-mutating design work, do not replace those headings with paraphrases such as `Recommended Shape`, `Design`, or `Summary`.
+- For orchestrator-led, non-mutating broad persistence review and migration-risk passes, use `references/persistence-brigade-trace-template.md` for literal first-update and final-summary examples.
+- For broad persistence work, the final answer must use a brigade summary format in this order: `Routing`, `Activated skills`, `Persistence scope`, `Discovery findings`, `Persistence assessment`, `Coordinated recommendations`, `Migration and rollout notes`, `Direct follow-on lanes`.
+- For broad persistence work, final `Activated skills` must explicitly name both `apple-appdev-workflow:apple-app-orchestrator` and `apple-appdev-workflow:apple-persistence-orchestrator`; the persistence stations alone are not sufficient.
+- For broad persistence work, the brigade summary must be the first visible final output; do not prepend findings prose, schema notes, or freeform migration advice before `Routing: orchestrator-led`.
+- For broad persistence work, do not let implementation-oriented headings such as `Outcome`, `Validation Executed`, or `Branch-Diff Review Status` replace the brigade headings in a non-mutating pass.
+- For orchestrator-led, non-mutating architecture or app-structure assessments, use `references/architecture-assessment-trace-template.md` for literal first-update and final-summary examples.
+- For broad bootstrap work, the final answer must use a brigade summary format in this order: `Routing`, `Activated skills`, `Bootstrap scope`, `Discovery findings`, `Mode`, `Inputs confirmed`, `Preflight status`, `Actions taken`, `Files created or assessed`, `Git and branch handoff`, `Validation handoff`, `Recommendation`.
+- For broad greenfield bootstrap work, `Files created or assessed` must include clickable links to generated `README.md` and `docs/HARNESS_HANDOFF.md` so scaffold docs are visible in Electron UI output.
+- For broad bootstrap work, the brigade summary must be the first visible final output; do not prepend headings such as `Result`, `Success`, or other pre-summary prose before `Routing`.
+- For broad bootstrap work, the first route block is separate from the final summary: keep the first block brigade-scoped as defined in `references/bootstrap-brigade-trace-template.md`, then preserve `apple-appdev-workflow:apple-app-orchestrator`, `apple-appdev-workflow:apple-bootstrap-orchestrator`, and `apple-appdev-workflow:apple-app-bootstrap` in the final aggregated `Activated skills` section when the parent route was active.
+- For broad review work, the final answer must use a brigade summary format in this order: `Routing`, `Activated skills`, `Review scope`, `Discovery findings`, `Overall assessment`, `Findings`, `Test coverage assessment`, `Residual risks`, `Recommendation`.
+- For broad review work, findings-only output or any partial wrap-up that omits one or more required brigade section labels is incomplete, even when the underlying findings are valid.
+- For broad review work, the brigade summary must be the first visible final output; do not prepend standalone severity cards, finding bullets, or any other pre-summary findings block before `Routing`.
+- For broad review work, do not emit inline structured review annotations such as `::code-comment{...}` unless the user explicitly requested inline comments; the brigade summary must stand on its own.
+- For broad review work, if source inspection exposes a live defect, keep it in `Findings` rather than downgrading it to `Residual risks`.
+- For broad review work, explicitly inspect changed startup, first-load, bootstrap, and retry-gating paths in model or service code; if a one-shot guard flips before success is proven or failure can retry cleanly, report that as a concrete finding.
+- For release-readiness work, state the evidence reviewed, manual-validation status, blockers, residual risks, and recommendation.
+- For broad release-readiness work, the final answer must use a brigade summary format in this order: `Routing`, `Activated skills`, `Release scope`, `Overall status`, `Evidence reviewed`, `Manual-validation status`, `Release-ops status`, `Blockers`, `Residual risks`, `Recommendation`.
+- For broad release-readiness work, final `Activated skills` must explicitly name both `apple-appdev-workflow:apple-app-orchestrator` and `apple-appdev-workflow:apple-release-orchestrator`; release stations alone are not sufficient.
+- For broad release-readiness work, the brigade summary must be the first visible final output; do not prepend standalone severity cards, blocker bullets, inline `::code-comment{...}` annotations, or other pre-summary prose before `Routing`.
+- For broad release-readiness work, if any required brigade section is omitted, the release pass is incomplete.
+- For broad release-readiness work, `Overall status` and `Recommendation` should use canonical outcome terms: `ready to ship`, `ready only for narrower distribution`, or `no-go`.
+- Treat `ship-candidate` as a narrower-distribution label, not as a synonym for `ready to ship`.
+- For blocker-remediation passes that claim ship-candidate or release-promotion outcomes, use the same release brigade summary and do not let a feature-only summary become the final readiness conclusion.
+- Do not allow blocker-remediation, hardening, or release-readiness passes to conclude `ship-candidate ready`, `ready to ship`, `no remaining blockers`, or equivalent closure unless each earlier unresolved blocker was explicitly resolved with concrete evidence or explicitly restated.
+- If a release answer uses a narrower `Release scope` than the user’s broad request, it must explicitly cite the user request or the discovered project document that already defined that narrower target.
+- For broad debug work, the final answer must use a brigade summary format in this order: `Routing`, `Activated skills`, `Debug scope`, `Reproduction status`, `Discovery findings`, `Evidence reviewed`, `Likely root cause`, `Validation gaps`, `Next diagnostic step`, `Recommended fix path`, `Residual risks`.
+- For broad debug work, final `Activated skills` must explicitly name both `apple-appdev-workflow:apple-app-orchestrator` and `apple-appdev-workflow:apple-debug-orchestrator`; runtime-station evidence alone is not sufficient.
+- For broad debug work, the brigade summary must be the first visible final output; do not prepend standalone diagnosis prose, likely-cause bullets, or `what to change first` bullets before `Routing`.
+- For broad debug work, do not let runtime-station headings such as `What I reproduced`, `Likely Cause`, or `What To Change First` replace the brigade section labels.
+- For broad debug work, a likely-cause paragraph plus a short fix recommendation is incomplete if the required brigade section labels are missing.
+- For broad accessibility work, the final answer must use a brigade summary format in this order: `Routing`, `Activated skills`, `Accessibility scope`, `Framework targets`, `Overall assessment`, `Required implementation constraints`, `Validation checklist`, `Manual checks`, `Release-claim notes` when relevant.
+- For broad accessibility work, `Activated skills` must explicitly name `apple-appdev-workflow:apple-accessibility-orchestrator`; `apple-appdev-workflow:apple-accessibility-foundations` plus framework auditors alone is not sufficient.
+- For broad accessibility work, the brigade summary must be the first visible final output; do not prepend standalone severity cards, dismiss blocks, or other findings prose before `Routing`.
+- For broad accessibility work, `apple-appdev-workflow:apple-accessibility-foundations` and the framework auditors must return evidence upward only; they must not emit the final user-facing answer while the brigade is active.
+- For broad accessibility work, do not emit a separate `Findings` section in the final brigade answer; fold concrete issues into `Overall assessment` and `Required implementation constraints`.
+- For broad accessibility work, do not emit inline review annotations such as `::code-comment{...}` in the final brigade answer.
+- Do not let live investigation notes, tool logs, or shell transcripts stand in for the brigade summary.

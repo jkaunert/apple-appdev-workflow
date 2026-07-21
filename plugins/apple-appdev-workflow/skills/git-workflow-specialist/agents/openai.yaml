@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: Git Workflow Specialist
+  short_description: Recover repo, branch, worktree, and dirty-state reality, then recommend safe non-destructive git workflow sequencing.
+  default_prompt: Use $apple-appdev-workflow:git-workflow-specialist to inspect this repo/worktree state, classify dirty changes, and recommend the next safe git workflow steps without mutating refs.

@@ -1,0 +1,4 @@
+interface:
+  display_name: Apple Swift Testing Foundations
+  short_description: Write, migrate, and modernize Swift Testing suites.
+  default_prompt: Use $apple-appdev-workflow:apple-swift-testing-foundations to write, migrate, or modernize this Apple unit or integration test suite with Swift Testing, preserving retained XCTest behavior only where it is still required.

@@ -1,0 +1,4 @@
+interface:
+  display_name: Apple Build Release Ops
+  short_description: Prepare iOS/macOS build and release steps with validation, rollout, and rollback controls.
+  default_prompt: Use $apple-appdev-workflow:apple-build-release-ops to prepare iOS/macOS build and release steps with validation, rollout, and rollback controls.

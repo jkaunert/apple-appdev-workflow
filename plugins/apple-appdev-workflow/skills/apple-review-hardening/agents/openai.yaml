@@ -1,0 +1,4 @@
+interface:
+  display_name: Apple Review Hardening
+  short_description: Focused release-risk and hardening review for narrow Apple app concerns after the correct broad review or release lane has already been chosen.
+  default_prompt: Use $apple-appdev-workflow:apple-review-hardening to run a focused Apple hardening pass only when the task is already narrowed to release-risk review; do not self-start broad branch-diff review or broad precommit review here.

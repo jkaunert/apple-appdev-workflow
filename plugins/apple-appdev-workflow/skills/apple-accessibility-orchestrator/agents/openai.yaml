@@ -1,0 +1,4 @@
+interface:
+  display_name: Apple Accessibility Orchestrator
+  short_description: Coordinate broad Apple accessibility audits, mixed-stack accessibility review, and release-claim evaluation through the accessibility brigade.
+  default_prompt: Use $apple-appdev-workflow:apple-accessibility-orchestrator to run this accessibility workflow through the accessibility brigade, start with discovery-first accessibility intake, coordinate the foundations and framework-auditor stations, and return a structured accessibility summary.

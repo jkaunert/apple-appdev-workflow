@@ -1,0 +1,4 @@
+interface:
+  display_name: Apple Feature Implementation
+  short_description: Implement this iOS/macOS feature using existing patterns, explicit DI, and concurrency-safe behavior.
+  default_prompt: Use $apple-appdev-workflow:apple-feature-implementation to implement this iOS/macOS feature using existing patterns, explicit DI, and concurrency-safe behavior.

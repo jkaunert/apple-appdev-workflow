@@ -1,0 +1,28 @@
+{
+  "name": "apple-appdev-workflow-runtime",
+  "version": "0.2.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "Pinned runtime dependencies for apple-appdev-workflow MCP and CLI surfaces.",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "deps:install": "npm ci",
+    "deps:audit": "npm audit --omit=dev",
+    "mcp:sosumi": "mcp-remote https://sosumi.ai/mcp",
+    "mcp:memory": "mcp-server-memory",
+    "mcp:xcodebuild": "XCODEBUILDMCP_ENABLED_WORKFLOWS=coverage,debugging,device,logging,macos,project-discovery,project-scaffolding,session-management,simulator,simulator-management,swift-package,ui-automation,utilities,xcode-ide xcodebuildmcp mcp",
+    "mcp:xcode-proxy": "mcp-proxy --host 127.0.0.1 --port 9876 --streamEndpoint /mcp -- xcrun mcpbridge",
+    "cli:sosumi": "sosumi",
+    "cli:xcodebuild": "xcodebuildmcp",
+    "doctor:xcodebuild": "xcodebuildmcp-doctor"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server-memory": "2026.1.26",
+    "@nshipster/sosumi": "https://github.com/NSHipster/sosumi.ai/archive/refs/tags/v1.0.2.tar.gz",
+    "mcp-proxy": "6.5.1",
+    "mcp-remote": "0.1.38",
+    "xcodebuildmcp": "2.3.2"
+  }
+}

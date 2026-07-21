@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: Apple Release Orchestrator
+  short_description: Coordinate broad Apple release-readiness workflows by sequencing testing, hardening, manual validation, release ops, and release evidence into one recommendation.
+  default_prompt: Use $apple-appdev-workflow:apple-release-orchestrator to run this Apple release-readiness workflow through the release brigade, activate the required release stations, aggregate the evidence, and return blockers, residual risks, and a recommendation.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Apple UIKit Modernization"
+  short_description: "Modernize UIKit scene, screen, orientation, and safe-area APIs."
+  default_prompt: "Use $apple-appdev-workflow:apple-uikit-modernization to modernize this UIKit code for scene lifecycle, screen, orientation, or safe-area API usage while preserving behavior and validation scope."

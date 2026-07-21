@@ -1,0 +1,4 @@
+interface:
+  display_name: Apple Swift Concurrency Review
+  short_description: Review Apple async code for isolation, Sendable, task, cancellation, and strict-concurrency correctness with patch-ready remediation.
+  default_prompt: Use $apple-appdev-workflow:apple-swift-concurrency-review to review this Apple concurrency code for correctness issues, prioritize the real risks, and provide the smallest safe remediations.

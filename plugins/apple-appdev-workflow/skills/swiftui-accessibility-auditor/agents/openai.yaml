@@ -1,0 +1,4 @@
+interface:
+  display_name: SwiftUI Accessibility Auditor
+  short_description: Audit or implement focused accessibility issues in SwiftUI views with concrete fixes and validation steps.
+  default_prompt: Use $apple-appdev-workflow:swiftui-accessibility-auditor to review this SwiftUI work for focused accessibility issues, apply the necessary fixes, and return the manual verification checklist. Do not treat broad release-claim accessibility audits as direct SwiftUI-auditor work.

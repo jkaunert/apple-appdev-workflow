@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: Apple Review Orchestrator
+  short_description: Coordinate broad Apple branch-diff and precommit review workflows by sequencing discovery, review stations, and findings-first output into one recommendation.
+  default_prompt: Use $apple-appdev-workflow:apple-review-orchestrator to run this Apple review workflow through the review brigade, start with discovery-first branch scanning, coordinate the required review stations, and return a findings-first review summary.

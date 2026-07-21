@@ -1,0 +1,7 @@
+version: 1
+interface:
+  display_name: Apple Product Surface Orchestrator
+  short_description: Own broad Apple product-surface review, coherence, and what-should-change-first prompts through the UI surface brigade.
+  default_prompt: Use $apple-appdev-workflow:apple-product-surface-orchestrator first for broad recommendation-first product-surface prompts, especially navigation, empty states, on-screen copy, hierarchy coherence, or what should change first. Emit the required routing block before any kickoff narration, coordinate the surface-quality and UI specialist stations, and return the structured product-surface brigade summary without editing code unless the user explicitly asks for implementation.
+policy:
+  allow_implicit_invocation: true

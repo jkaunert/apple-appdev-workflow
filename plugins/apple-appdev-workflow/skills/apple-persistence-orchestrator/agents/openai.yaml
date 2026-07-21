@@ -1,0 +1,7 @@
+version: 1
+interface:
+  display_name: Apple Persistence Orchestrator
+  short_description: Own broad Apple persistence review, migration approach, rollout-risk, and what-should-change-first prompts through the persistence brigade.
+  default_prompt: Use $apple-appdev-workflow:apple-persistence-orchestrator first for broad recommendation-first persistence prompts, especially migration approach, rollout risk, data-loss risk, or what should change first. Emit the required routing block before any kickoff narration, coordinate the persistence specialist stations, route current Apple persistence doc lookups through $apple-appdev-workflow:fetch-apple-docs before generic web search, and return the structured persistence brigade summary without editing code unless the user explicitly asks for implementation.
+policy:
+  allow_implicit_invocation: true

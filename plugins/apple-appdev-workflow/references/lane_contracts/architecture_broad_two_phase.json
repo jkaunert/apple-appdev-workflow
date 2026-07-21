@@ -1,0 +1,117 @@
+{
+  "lane_id": "architecture_broad_two_phase",
+  "mode": "two_phase_memo_synthesis",
+  "owner": "apple-appdev-workflow:apple-architecture-orchestrator",
+  "execution": {
+    "phase1_timeout_cap_seconds": 120,
+    "phase1_max_attempts": 3,
+    "phase2_timeout_strategy": "half_budget",
+    "phase2_timeout_floor_seconds": 60,
+    "phase2_timeout_cap_seconds": 120
+  },
+  "acceptance": {
+    "checker": "check_architecture_trace.py",
+    "route_label": "apple-architecture-orchestrator (broad two-phase)",
+    "acceptance_role": "canonical"
+  },
+  "validator": {
+    "required_top_level_owner": "apple-appdev-workflow:apple-app-orchestrator",
+    "contexts": {
+      "lane_local_acceptance": {
+        "require_top_level_owner": true,
+        "top_level_owner_proof": "invocation_envelope"
+      },
+      "app_orchestrated_transcript": {
+        "require_top_level_owner": true,
+        "required_parent_final_skills": [
+          "apple-appdev-workflow:apple-app-orchestrator"
+        ]
+      }
+    }
+  },
+  "runner": {
+    "existing_memo_arg": "architecture_findings_memo_path",
+    "phase1_recommendation": "The bounded architecture discovery phase did not produce a reusable findings memo. Tighten phase-1 discovery before treating final synthesis as the active blocker.",
+    "phase1_checker_output_fallback": "phase-1 architecture findings memo missing before synthesis",
+    "phase2_checker_output_fallback": "phase-2 architecture synthesis missing summary"
+  },
+  "phase1": {
+    "opening_instructions": [
+      "Use $apple-appdev-workflow:apple-architecture-orchestrator to assess this SwiftUI app's architecture in two phases.",
+      "This is phase 1 of 2.",
+      "Emit this literal first route block before any other bundle-authored narration:"
+    ],
+    "route_block": [
+      "Routing: orchestrator-led",
+      "Activated skills: `apple-appdev-workflow:apple-architecture-orchestrator`, `apple-appdev-workflow:apple-discovery-first`, `apple-appdev-workflow:apple-architecture-design`",
+      "Inspecting the current app structure, ownership seams, and dependency flow first, then identifying the highest-leverage architectural change to make next."
+    ],
+    "post_route_instructions": [
+      "Do not emit the final brigade summary in this phase.",
+      "Treat the supplied evidence as the entire architecture record for this phase.",
+      "Do not inspect repo state, git history, plugin references, docs, or run shell commands.",
+      "Do not reopen bundle templates, baseline references, or orchestration flow docs after the route block.",
+      "If the supplied evidence feels incomplete, call that out in Risks; do not widen discovery."
+    ],
+    "memo_heading_intro": "Return only a compact architecture findings memo with exactly these headings:",
+    "memo_headings": [
+      "Assessment scope",
+      "Discovery findings",
+      "Candidate first change",
+      "Risks",
+      "Next implementation entry points"
+    ],
+    "constraints": [
+      "keep Discovery findings to at most 4 bullets total",
+      "keep Candidate first change to at most 2 bullets total",
+      "keep Risks to at most 2 bullets total",
+      "keep Next implementation entry points to at most 3 numbered items total",
+      "treat the DI/container/factory/container-pattern seam as the default focus before any feature-specific polish",
+      "prefer one highest-leverage structural change over a laundry list of smaller cleanup items",
+      "do not use markdown links, absolute filesystem paths, or file-reference syntax inside the memo; use short backticked filenames or repo-relative paths only",
+      "once you have enough evidence to support one highest-leverage architecture change, stop and emit the memo",
+      "do not perform implementation, mutation, or branch-diff review in this phase"
+    ]
+  },
+  "memo_schema": {
+    "required_headings": [
+      "Assessment scope",
+      "Discovery findings",
+      "Candidate first change",
+      "Risks",
+      "Next implementation entry points"
+    ]
+  },
+  "phase2": {
+    "opening_instructions": [
+      "Use $apple-appdev-workflow:apple-architecture-orchestrator to synthesize the final architecture brigade summary from the memo below.",
+      "Emit this exact literal three-line route block before any headings, markdown formatting, or other bundle-authored narration:"
+    ],
+    "route_block": [
+      "Routing: orchestrator-led",
+      "Activated skills: `apple-appdev-workflow:apple-architecture-orchestrator`, `apple-appdev-workflow:apple-discovery-first`, `apple-appdev-workflow:apple-architecture-design`",
+      "Inspecting the current app structure, ownership seams, and dependency flow first, then identifying the highest-leverage architectural change to make next."
+    ],
+    "post_route_instructions": [
+      "Treat the supplied memo as the entire architecture record. Do not inspect repo state, git history, or run shell commands.",
+      "Do not reopen bundle references, trace templates, or planning docs.",
+      "Do not emit a kickoff sentence such as `Using apple-appdev-workflow:apple-architecture-orchestrator...`, and do not mention memo usage or synthesis instructions in the final answer."
+    ],
+    "final_heading_intro": "After the literal three-line route block, return only the final brigade summary with these headings:",
+    "final_headings": [
+      "Activated skills",
+      "Assessment scope",
+      "Discovery findings",
+      "What Should Change First",
+      "Recommended follow-on structure",
+      "Risks",
+      "Next implementation entry points"
+    ],
+    "final_activated_skills_explicit_intro": "In the `Activated skills` section, explicitly name:",
+    "final_activated_skills": [
+      "apple-appdev-workflow:apple-architecture-orchestrator",
+      "apple-appdev-workflow:apple-discovery-first",
+      "apple-appdev-workflow:apple-architecture-design"
+    ]
+  }
+}

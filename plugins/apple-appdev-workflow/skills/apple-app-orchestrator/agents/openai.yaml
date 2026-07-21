@@ -1,0 +1,7 @@
+version: 1
+interface:
+  display_name: Apple App Orchestrator
+  short_description: Orchestrate this iOS/macOS task by selecting the right Apple subskills and driving it through validation.
+  default_prompt: Use $apple-appdev-workflow:apple-app-orchestrator to orchestrate this iOS/macOS task by selecting the right Apple subskills and driving it through validation. When a request is broad persistence review, migration-risk framing, or asks what should change first before shipping data migrations, route through $apple-appdev-workflow:apple-persistence-orchestrator instead of collapsing directly into a SwiftData station.
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,4 @@
+interface:
+  display_name: Apple Architecture
+  short_description: Design this iOS/macOS architecture change with explicit contracts and concurrency-safe boundaries.
+  default_prompt: Use $apple-appdev-workflow:apple-architecture-design to design this iOS/macOS architecture change with explicit contracts and concurrency-safe boundaries.

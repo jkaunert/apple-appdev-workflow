@@ -1,0 +1,4 @@
+interface:
+  display_name: Apple SwiftData Foundations
+  short_description: Focused SwiftData schema and container design after the broader persistence scope is already clear.
+  default_prompt: Use $apple-appdev-workflow:apple-swiftdata-foundations for focused schema, container, query, or coexistence design after the broader persistence scope is already clear. If the prompt is a broad recommendation-first persistence review or asks what should change first before rollout, route through $apple-appdev-workflow:apple-persistence-orchestrator first.

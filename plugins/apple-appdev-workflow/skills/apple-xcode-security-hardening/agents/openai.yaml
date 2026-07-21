@@ -1,0 +1,4 @@
+interface:
+  display_name: Apple Xcode Security Hardening
+  short_description: Audit Xcode and native-code security posture.
+  default_prompt: Use $apple-appdev-workflow:apple-xcode-security-hardening to audit this Xcode project for security build-setting, entitlement, and native-code hardening gaps, report proposed changes, and ask before mutating project files.

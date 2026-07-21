@@ -1,0 +1,121 @@
+{
+  "lane_id": "persistence_broad_two_phase",
+  "mode": "two_phase_memo_synthesis",
+  "owner": "apple-appdev-workflow:apple-persistence-orchestrator",
+  "execution": {
+    "phase1_timeout_cap_seconds": 240,
+    "phase1_max_attempts": 3,
+    "phase2_timeout_strategy": "half_budget",
+    "phase2_timeout_floor_seconds": 60,
+    "phase2_timeout_cap_seconds": 180
+  },
+  "acceptance": {
+    "checker": "check_persistence_design_trace.py",
+    "route_label": "apple-persistence-orchestrator (broad two-phase)",
+    "acceptance_role": "canonical"
+  },
+  "validator": {
+    "required_top_level_owner": "apple-appdev-workflow:apple-app-orchestrator",
+    "contexts": {
+      "lane_local_acceptance": {
+        "require_top_level_owner": true,
+        "top_level_owner_proof": "invocation_envelope"
+      },
+      "app_orchestrated_transcript": {
+        "require_top_level_owner": true,
+        "required_parent_final_skills": [
+          "apple-appdev-workflow:apple-app-orchestrator"
+        ]
+      }
+    }
+  },
+  "runner": {
+    "existing_memo_arg": "persistence_findings_memo_path",
+    "phase1_recommendation": "The bounded persistence discovery phase did not produce a reusable findings memo. Tighten phase-1 persistence scope before treating final synthesis as the active blocker.",
+    "phase1_checker_output_fallback": "phase-1 persistence findings memo missing before synthesis",
+    "phase2_checker_output_fallback": "phase-2 persistence synthesis missing summary"
+  },
+  "phase1": {
+    "opening_instructions": [
+      "Use $apple-appdev-workflow:apple-persistence-orchestrator to assess this app's persistence model and migration risk in two phases.",
+      "This is phase 1 of 2.",
+      "Emit this literal first route block before any other bundle-authored narration:"
+    ],
+    "route_block": [
+      "Routing: orchestrator-led",
+      "Activated skills: `apple-appdev-workflow:apple-persistence-orchestrator`, `apple-appdev-workflow:apple-swiftdata-foundations`, `apple-appdev-workflow:apple-swiftdata-review`",
+      "Inspecting the current persistence seams first, then producing a design-only persistence review that prioritizes migration and rollout risk."
+    ],
+    "post_route_instructions": [
+      "Do not emit the final brigade summary in this phase.",
+      "Treat the supplied evidence as the entire persistence record for this phase.",
+      "Do not inspect repo state, git history, plugin references, Apple docs, bundle templates, or run shell commands.",
+      "Do not reopen persistence flow docs, trace templates, or output contracts after the route block.",
+      "If the supplied evidence feels incomplete, call that out in Migration and rollout notes; do not widen discovery."
+    ],
+    "memo_heading_intro": "Return only a compact persistence findings memo with exactly these headings:",
+    "memo_headings": [
+      "Persistence scope",
+      "Discovery findings",
+      "Primary risk",
+      "Candidate first change",
+      "Migration and rollout notes",
+      "Direct follow-on lanes"
+    ],
+    "constraints": [
+      "keep Discovery findings to at most 3 bullets total",
+      "keep Primary risk to exactly 1 bullet unless two risks are inseparable",
+      "keep Candidate first change to exactly 1 bullet unless one prerequisite must come first",
+      "keep Migration and rollout notes to at most 2 bullets total",
+      "keep Direct follow-on lanes to at most 2 numbered items total",
+      "prioritize data-loss, migration, and rollout risk over schema polish, retention-policy cleanup, or secondary architecture cleanup",
+      "treat the container/store location seam plus `HistoryItem` storage shape as the default focus before any retention or export surface",
+      "prefer one safest first persistence change over multiple parallel refactors",
+      "do not use markdown links, absolute filesystem paths, or file-reference syntax inside the memo; use short backticked filenames or repo-relative paths only",
+      "once you have enough evidence to support one highest-leverage persistence recommendation, stop and emit the memo"
+    ],
+    "default_scenario_note": "Treat this as a coexistence and rollout-safety question rather than a simple persistence cleanup pass.\n\nAssume the current persistence boundary must stay deterministic and rollback-safe before any broader schema cleanup.\n\nPrioritize:\n- store-location and container-boundary safety\n- one-release coexistence and rollback behavior\n- the single safest first persistence change plus only narrow specialist follow-on work"
+  },
+  "memo_schema": {
+    "required_headings": [
+      "Persistence scope",
+      "Discovery findings",
+      "Primary risk",
+      "Candidate first change",
+      "Migration and rollout notes",
+      "Direct follow-on lanes"
+    ]
+  },
+  "phase2": {
+    "opening_instructions": [
+      "Use $apple-appdev-workflow:apple-persistence-orchestrator to synthesize the final persistence brigade summary from the memo below.",
+      "Emit this exact literal three-line route block before any headings, markdown formatting, or other bundle-authored narration:"
+    ],
+    "route_block": [
+      "Routing: orchestrator-led",
+      "Activated skills: `apple-appdev-workflow:apple-persistence-orchestrator`, `apple-appdev-workflow:apple-swiftdata-foundations`, `apple-appdev-workflow:apple-swiftdata-review`",
+      "Inspecting the current persistence seams first, then producing a design-only persistence review that prioritizes migration and rollout risk."
+    ],
+    "post_route_instructions": [
+      "Treat the supplied memo as the entire persistence record. Do not inspect repo state, git history, or run shell commands.",
+      "Do not reopen bundle references, trace templates, or planning docs.",
+      "Do not emit a kickoff sentence such as `Using apple-appdev-workflow:apple-persistence-orchestrator...`, and do not mention memo usage or synthesis instructions in the final answer."
+    ],
+    "final_heading_intro": "After the literal three-line route block, return only the final brigade summary with these headings:",
+    "final_headings": [
+      "Activated skills",
+      "Persistence scope",
+      "Discovery findings",
+      "Persistence assessment",
+      "Coordinated recommendations",
+      "Migration and rollout notes",
+      "Direct follow-on lanes"
+    ],
+    "final_activated_skills_explicit_intro": "In the `Activated skills` section, explicitly name:",
+    "final_activated_skills": [
+      "apple-appdev-workflow:apple-persistence-orchestrator",
+      "apple-appdev-workflow:apple-swiftdata-foundations",
+      "apple-appdev-workflow:apple-swiftdata-review"
+    ]
+  }
+}

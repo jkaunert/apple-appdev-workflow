@@ -1,0 +1,4 @@
+interface:
+  display_name: Apple Core Data Expert
+  short_description: Diagnose and improve Core Data stacks, contexts, fetches, migrations, batch operations, history, performance, and CloudKit sync safely.
+  default_prompt: Use $apple-appdev-workflow:apple-core-data-expert to apply Apple Core Data expertise to this task, checking context ownership, object-ID handoff, fetch/save behavior, migration risk, history, and CloudKit constraints.

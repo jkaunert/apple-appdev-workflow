@@ -1,0 +1,127 @@
+{
+  "lane_id": "debug_broad_two_phase",
+  "mode": "two_phase_memo_synthesis",
+  "owner": "apple-appdev-workflow:apple-debug-orchestrator",
+  "execution": {
+    "phase1_timeout_cap_seconds": 300,
+    "phase1_max_attempts": 2,
+    "phase2_timeout_strategy": "remaining_after_reserve",
+    "phase2_timeout_floor_seconds": 120,
+    "phase2_timeout_cap_seconds": 180,
+    "phase2_timeout_reserve_seconds": 120
+  },
+  "acceptance": {
+    "checker": "check_debug_trace.py",
+    "route_label": "apple-debug-orchestrator (broad two-phase)",
+    "acceptance_role": "canonical"
+  },
+  "validator": {
+    "required_top_level_owner": "apple-appdev-workflow:apple-app-orchestrator",
+    "contexts": {
+      "lane_local_acceptance": {
+        "require_top_level_owner": true,
+        "top_level_owner_proof": "invocation_envelope"
+      },
+      "app_orchestrated_transcript": {
+        "require_top_level_owner": true,
+        "required_parent_final_skills": [
+          "apple-appdev-workflow:apple-app-orchestrator"
+        ]
+      }
+    }
+  },
+  "runner": {
+    "existing_memo_arg": "debug_findings_memo_path",
+    "phase1_recommendation": "The bounded debug diagnosis phase did not produce a reusable findings memo. Tighten the phase-1 runtime path before treating final synthesis as the active blocker.",
+    "phase1_checker_output_fallback": "phase-1 debug findings memo missing before synthesis",
+    "phase2_checker_output_fallback": "phase-2 debug synthesis missing summary"
+  },
+  "phase1": {
+    "opening_instructions": [
+      "Use $apple-appdev-workflow:apple-debug-orchestrator to diagnose this iOS runtime issue in two phases.",
+      "This is phase 1 of 2.",
+      "Emit this literal first route block before any other bundle-authored narration:"
+    ],
+    "route_block": [
+      "Routing: orchestrator-led",
+      "Activated skills: `apple-appdev-workflow:apple-debug-orchestrator`, `apple-appdev-workflow:apple-runtime-debugger-ios`",
+      "Reproducing the issue first, then collapsing runtime evidence, likely cause, and the next diagnostic step into one brigade summary."
+    ],
+    "post_route_instructions": [
+      "Try one bounded iOS-simulator reproduction attempt if the app can be launched quickly. If that single attempt does not reach the affected flow promptly, stop escalating runtime work and continue from the supplied issue record plus bounded code evidence only.",
+      "Do not inspect repo state beyond the supplied evidence blocks, do not run git commands, and do not reopen bundle references, trace templates, or checker-shape docs after the route block.",
+      "Once you can support one likely root-cause hypothesis or a confident reproduction gap memo, stop and emit the memo.",
+      "Do not emit the final brigade summary in this phase."
+    ],
+    "memo_heading_intro": "Return only a compact debug findings memo with exactly these headings:",
+    "memo_headings": [
+      "Reproduction status",
+      "Candidate root cause",
+      "Evidence checked",
+      "Validation gaps",
+      "Next diagnostic step"
+    ],
+    "constraints": [
+      "keep Candidate root cause to at most 2 bullets total",
+      "keep Evidence checked to at most 4 bullets total",
+      "keep Validation gaps to at most 2 bullets total",
+      "keep Next diagnostic step to at most 2 numbered items total",
+      "if direct runtime proof is weak, say so explicitly instead of fabricating certainty",
+      "prefer one DI / factory / retry ownership defect over a broad list of unrelated cleanup ideas",
+      "do not use markdown links, absolute filesystem paths, or file-reference syntax inside the memo; use short backticked filenames or repo-relative paths only"
+    ]
+  },
+  "memo_schema": {
+    "required_headings": [
+      "Reproduction status",
+      "Candidate root cause",
+      "Evidence checked",
+      "Validation gaps",
+      "Next diagnostic step"
+    ]
+  },
+  "phase2": {
+    "opening_instructions": [
+      "Use $apple-appdev-workflow:apple-debug-orchestrator to synthesize the final debug brigade summary from the memo below.",
+      "Emit this exact literal three-line route block before any headings, markdown formatting, or other bundle-authored narration:"
+    ],
+    "route_block": [
+      "Routing: orchestrator-led",
+      "Activated skills: `apple-appdev-workflow:apple-debug-orchestrator`, `apple-appdev-workflow:apple-runtime-debugger-ios`",
+      "Reproducing the issue first, then collapsing runtime evidence, likely cause, and the next diagnostic step into one brigade summary."
+    ],
+    "post_route_instructions": [
+      "Treat the supplied memo as the entire debug record. Do not inspect repo state, git history, or run shell commands.",
+      "Do not reopen bundle references, trace templates, or planning docs.",
+      "Do not emit a kickoff sentence such as `Using apple-appdev-workflow:apple-debug-orchestrator...`, and do not mention evidence-only mode or synthesis instructions in the final answer."
+    ],
+    "final_heading_intro": "After the literal three-line route block, return only the final brigade summary with these headings:",
+    "final_headings": [
+      "Activated skills",
+      "Debug scope",
+      "Reproduction status",
+      "Discovery findings",
+      "Evidence reviewed",
+      "Likely root cause",
+      "Validation gaps",
+      "Next diagnostic step",
+      "Recommended fix path",
+      "Residual risks"
+    ],
+    "final_activated_skills_explicit_intro": "In the `Activated skills` section, explicitly name:",
+    "final_activated_skills": [
+      "apple-appdev-workflow:apple-debug-orchestrator"
+    ],
+    "final_activated_skill_one_of_groups_explicit_intro": "In the `Activated skills` section, also explicitly name at least one supported runtime station:",
+    "final_activated_skill_one_of_groups": [
+      {
+        "name": "runtime_station",
+        "required": true,
+        "skills": [
+          "apple-appdev-workflow:apple-runtime-debugger-ios",
+          "apple-appdev-workflow:apple-runtime-debugger-macos"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: Apple Discovery First
+  short_description: Run discovery for this iOS/macOS task and choose the minimal integration path.
+  default_prompt: Use $apple-appdev-workflow:apple-discovery-first to run discovery for this iOS/macOS task and choose the minimal integration path.

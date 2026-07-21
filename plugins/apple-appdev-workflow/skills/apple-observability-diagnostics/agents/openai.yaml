@@ -1,0 +1,4 @@
+interface:
+  display_name: Apple Observability Diagnostics
+  short_description: Add or review Apple-app observability, structured logging, analytics quality, crash breadcrumbs, and rollout monitoring without over-instrumenting.
+  default_prompt: Use $apple-appdev-workflow:apple-observability-diagnostics to review this Apple app change for observability and diagnostics coverage, including structured logs, analytics quality, crash context, and rollout monitoring expectations.

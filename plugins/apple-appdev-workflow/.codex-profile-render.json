@@ -1,0 +1,27 @@
+{
+  "profile": "marketplace",
+  "copied_entries": [
+    ".codex-plugin",
+    ".mcp.json",
+    "LICENSE",
+    "agents",
+    "assets",
+    "codex-cli/setup-plugin-runtime.sh",
+    "codex-cli/verify-plugin-runtime.sh",
+    "docs/BUNDLE_CAPABILITIES.md",
+    "docs/GIT_WORKFLOW_SPECIALIST.md",
+    "docs/MCP_SETUP.md",
+    "docs/PRIVACY_POLICY.md",
+    "docs/TERMS_OF_SERVICE.md",
+    "docs/WORKFLOW_QUICKSTART.md",
+    "hooks",
+    "-hooks/test",
+    "package-lock.json",
+    "package.json",
+    "references",
+    "-references/staged-smoke-coverage-matrix.json",
+    "routing",
+    "skills"
+  ],
+  "stripped_manifest_keys": []
+}

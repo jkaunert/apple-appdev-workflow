@@ -1,0 +1,31 @@
+{
+  "sosumi": {
+    "command": "npx",
+    "args": [
+      "-y",
+      "mcp-remote@0.1.38",
+      "https://sosumi.ai/mcp"
+    ]
+  },
+  "memory": {
+    "command": "npx",
+    "args": [
+      "-y",
+      "@modelcontextprotocol/server-memory@2026.1.26"
+    ],
+    "env": {
+      "MEMORY_FILE_PATH": "${input:memory_file_path}"
+    }
+  },
+  "XcodeBuildMCP": {
+    "command": "npx",
+    "args": [
+      "-y",
+      "xcodebuildmcp@2.3.2",
+      "mcp"
+    ],
+    "env": {
+      "XCODEBUILDMCP_ENABLED_WORKFLOWS": "coverage,debugging,device,logging,macos,project-discovery,project-scaffolding,session-management,simulator,simulator-management,swift-package,ui-automation,utilities,xcode-ide"
+    }
+  }
+}

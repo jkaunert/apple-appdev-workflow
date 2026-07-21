@@ -1,0 +1,4 @@
+interface:
+  display_name: Apple SwiftUI UI Patterns
+  short_description: Choose SwiftUI composition, shell, state, environment, ForEach, localization, and SDK compatibility patterns.
+  default_prompt: Use $apple-appdev-workflow:apple-swiftui-ui-patterns to apply the Apple SwiftUI UI patterns workflow to this UI task, selecting the right shell, component, state, environment, localization, ForEach, and SDK-compatibility patterns while preserving DI, navigation, accessibility, and performance constraints.

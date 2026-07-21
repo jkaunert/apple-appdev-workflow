@@ -1,0 +1,7 @@
+version: 1
+interface:
+  display_name: Apple Architecture Orchestrator
+  short_description: Preferred visible router for broad Apple architecture assessment and recommendation-first app-structure work.
+  default_prompt: Use $apple-appdev-workflow:apple-architecture-orchestrator to route this broad architecture assessment through the architecture brigade and return one structured architecture recommendation.
+policy:
+  allow_implicit_invocation: true

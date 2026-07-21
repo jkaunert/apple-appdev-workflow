@@ -1,0 +1,4 @@
+interface:
+  display_name: Apple Runtime Debugger iOS
+  short_description: Focused iOS simulator evidence station for logs, screenshots, UI inspection, and XcodeBuildMCP-backed runtime diagnosis after the debug brigade has already scoped the issue.
+  default_prompt: Use $apple-appdev-workflow:apple-runtime-debugger-ios to run a focused iOS simulator debugging pass only after the broad debug workflow has already routed through $apple-appdev-workflow:apple-debug-orchestrator; capture concrete runtime evidence rather than owning the top-level diagnosis.

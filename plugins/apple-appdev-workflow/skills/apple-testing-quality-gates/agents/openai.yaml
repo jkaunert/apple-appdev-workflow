@@ -1,0 +1,4 @@
+interface:
+  display_name: Apple Testing Quality Gates
+  short_description: Create and execute a layered iOS/macOS test plan with explicit quality gates, using the Swift Testing specialist skill when authoring or modernization guidance is needed.
+  default_prompt: Use $apple-appdev-workflow:apple-testing-quality-gates to create and execute a layered iOS/macOS test plan with explicit quality gates, and route any Swift Testing authoring or migration guidance through $apple-appdev-workflow:apple-swift-testing-foundations.

@@ -1,0 +1,4 @@
+interface:
+  display_name: Apple Liquid Glass
+  short_description: Adopt and review SwiftUI Liquid Glass correctly, with availability gating, fallbacks, coherent shapes, and performance-aware use.
+  default_prompt: Use $apple-appdev-workflow:apple-liquid-glass to apply Apple Liquid Glass guidance to this SwiftUI feature, choosing the right glass surfaces, fallback behavior, and API usage without overusing the effect.
