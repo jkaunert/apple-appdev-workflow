@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -8,11 +9,131 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const MODULE_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SKILL_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const QUALIFIED_SKILL_ID = /^([a-z0-9]+(?:-[a-z0-9]+)*):([a-z0-9]+(?:-[a-z0-9]+)*)$/;
+const STATE_COMPONENT = /^[A-Za-z0-9._-]{1,128}$/;
+const STATE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 
 export class RouterContractError extends Error {}
 
 function unique(values) {
   return [...new Set(values)];
+}
+
+function routeStateRoot() {
+  if (process.env.APPLE_APPDEV_ROUTE_STATE_ROOT) {
+    return path.resolve(process.env.APPLE_APPDEV_ROUTE_STATE_ROOT);
+  }
+  const codexHome = process.env.CODEX_HOME
+    ? path.resolve(process.env.CODEX_HOME)
+    : path.join(os.homedir(), ".codex");
+  return path.join(codexHome, "tmp", "apple-appdev-workflow", "route-state");
+}
+
+function safeStateComponent(value) {
+  return (
+    typeof value === "string"
+    && value !== "."
+    && value !== ".."
+    && STATE_COMPONENT.test(value)
+  )
+    ? value
+    : null;
+}
+
+export function routeStatePathForInput(input) {
+  const sessionId = safeStateComponent(input?.session_id);
+  const turnId = safeStateComponent(input?.turn_id);
+  if (!sessionId || !turnId) return null;
+  return path.join(routeStateRoot(), sessionId, `${turnId}.json`);
+}
+
+export function readRouteState(input) {
+  const statePath = routeStatePathForInput(input);
+  if (!statePath) return null;
+  try {
+    const state = JSON.parse(fs.readFileSync(statePath, "utf8"));
+    return state && typeof state === "object" && !Array.isArray(state) ? state : null;
+  } catch {
+    return null;
+  }
+}
+
+export function deleteRouteState(input) {
+  const statePath = routeStatePathForInput(input);
+  if (!statePath) return;
+  try {
+    fs.unlinkSync(statePath);
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error;
+  }
+}
+
+function pruneRouteState(root) {
+  let sessionEntries = [];
+  try {
+    sessionEntries = fs.readdirSync(root, { withFileTypes: true });
+  } catch {
+    return;
+  }
+  const cutoff = Date.now() - STATE_MAX_AGE_MS;
+  for (const sessionEntry of sessionEntries) {
+    if (!sessionEntry.isDirectory() || !STATE_COMPONENT.test(sessionEntry.name)) continue;
+    const sessionRoot = path.join(root, sessionEntry.name);
+    let stateEntries = [];
+    try {
+      stateEntries = fs.readdirSync(sessionRoot, { withFileTypes: true });
+    } catch {
+      continue;
+    }
+    for (const stateEntry of stateEntries) {
+      if (!stateEntry.isFile() || !stateEntry.name.endsWith(".json")) continue;
+      const statePath = path.join(sessionRoot, stateEntry.name);
+      try {
+        if (fs.statSync(statePath).mtimeMs < cutoff) fs.unlinkSync(statePath);
+      } catch {
+        // Pruning is opportunistic and must not affect routing.
+      }
+    }
+    try {
+      if (fs.readdirSync(sessionRoot).length === 0) fs.rmdirSync(sessionRoot);
+    } catch {
+      // Another hook may be using the directory.
+    }
+  }
+}
+
+export function writeRouteState(input, decision, harness) {
+  const statePath = routeStatePathForInput(input);
+  if (!statePath) {
+    throw new RouterContractError("routed hook input requires safe session_id and turn_id values");
+  }
+  let transcriptOffset = null;
+  if (typeof input.transcript_path === "string" && input.transcript_path.length > 0) {
+    try {
+      transcriptOffset = fs.statSync(input.transcript_path).size;
+    } catch {
+      transcriptOffset = null;
+    }
+  }
+  const state = {
+    schemaVersion: 1,
+    sessionId: input.session_id,
+    turnId: input.turn_id,
+    transcriptPath: typeof input.transcript_path === "string" ? input.transcript_path : null,
+    transcriptOffset,
+    routing: decision.routing,
+    owner: decision.owner,
+    topLevelOwner: harness.owner.qualified,
+    activatedSkills: decision.activatedSkills,
+    enforceFinalContract: decision.owner === harness.owner.qualified,
+    createdAt: new Date().toISOString(),
+  };
+  const root = routeStateRoot();
+  fs.mkdirSync(path.dirname(statePath), { recursive: true, mode: 0o700 });
+  const temporaryPath = `${statePath}.${process.pid}.${Date.now()}.tmp`;
+  fs.writeFileSync(temporaryPath, `${JSON.stringify(state)}\n`, { encoding: "utf8", mode: 0o600 });
+  fs.renameSync(temporaryPath, statePath);
+  pruneRouteState(root);
+  return state;
 }
 
 function isContained(root, candidate) {
@@ -404,32 +525,46 @@ export function formatAdditionalContext(decision, harness) {
   return `${evidence}\n\n<apple-appdev-workflow-owner-kernel>\n${harness.kernel}\n</apple-appdev-workflow-owner-kernel>`;
 }
 
-export function outputForInput(input, { pluginRoot } = {}) {
+export function evaluateInput(input, { pluginRoot } = {}) {
   try {
-    if (input?.agent_id || input?.agent_type) return null;
+    if (input?.agent_id || input?.agent_type) {
+      return { output: null, decision: { kind: "skip", reason: "subagent-turn" }, harness: null };
+    }
     const harness = loadHarness(pluginRoot);
     const decision = selectRoute(input, harness);
-    if (decision.kind === "skip") return null;
+    if (decision.kind === "skip") return { output: null, decision, harness };
     const additionalContext = formatAdditionalContext(decision, harness);
     if (Buffer.byteLength(additionalContext, "utf8") > 8000) {
       throw new RouterContractError("combined route evidence and owner kernel exceed 8000 bytes");
     }
     return {
-      continue: true,
-      hookSpecificOutput: {
-        hookEventName: "UserPromptSubmit",
-        additionalContext,
+      decision,
+      harness,
+      output: {
+        continue: true,
+        hookSpecificOutput: {
+          hookEventName: "UserPromptSubmit",
+          additionalContext,
+        },
       },
     };
   } catch (error) {
     const detail = error instanceof Error ? error.message : "unknown router failure";
     const message = `Apple workflow router failed closed: ${detail}`;
     return {
-      continue: false,
-      stopReason: message,
-      systemMessage: message,
+      decision: null,
+      harness: null,
+      output: {
+        continue: false,
+        stopReason: message,
+        systemMessage: message,
+      },
     };
   }
+}
+
+export function outputForInput(input, options = {}) {
+  return evaluateInput(input, options).output;
 }
 
 async function readInput() {
@@ -445,7 +580,16 @@ async function readInput() {
 export async function runCli() {
   let output;
   try {
-    output = outputForInput(await readInput());
+    const input = await readInput();
+    const evaluation = evaluateInput(input);
+    output = evaluation.output;
+    if (
+      output?.continue === true
+      && evaluation.decision?.kind === "route"
+      && evaluation.harness
+    ) {
+      writeRouteState(input, evaluation.decision, evaluation.harness);
+    }
   } catch (error) {
     const detail = error instanceof Error ? error.message : "unknown router failure";
     const message = `Apple workflow router failed closed: ${detail}`;

@@ -5,7 +5,18 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"$PLUGIN_ROOT/hooks/apple_router.mjs\"",
+            "command": "/usr/bin/python3 \"$PLUGIN_ROOT/hooks/apple_hook.py\" route",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/python3 \"$PLUGIN_ROOT/hooks/apple_hook.py\" stop",
             "timeout": 5
           }
         ]

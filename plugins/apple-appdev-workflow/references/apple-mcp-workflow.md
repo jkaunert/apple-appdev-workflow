@@ -8,6 +8,21 @@ This reference describes how MCP-backed tools fit into the Apple Codex workflow.
 
 ## Core MCP roles
 
+### Public portal native and CLI override
+- If the installed artifact is the `public-portal` profile, load
+  `public-portal-tool-adapter.md` before applying the default MCP rules below.
+- That profile intentionally declares no plugin-managed MCP servers and ships
+  no npm runtime payload. Preserve the normal Apple workflow graph and use:
+  - native `xcode-tools` inside Xcode CodingAssistant
+  - pinned XcodeBuildMCP CLI commands on Desktop, CLI, or IDE hosts with shell
+    execution
+  - the Sosumi CLI or direct Sosumi HTTP for Apple documentation
+  - Codex native local memories when available and enabled by the user
+- The absence of `XcodeBuildMCP`, Sosumi, or Memory MCP tools is expected in
+  `public-portal`; do not classify it as MCP misconfiguration.
+- Native memory replaces this bundle's optional continuity use of Memory MCP,
+  not explicit graph-tool semantics. Required decisions remain in Markdown.
+
 ### Xcode-headless host override
 - If the active host is Xcode CodingAssistant or the installed artifact is the
   `xcode-headless` profile, apply `xcode-headless-host-policy.md` and
@@ -26,8 +41,8 @@ This reference describes how MCP-backed tools fit into the Apple Codex workflow.
 
 ### XcodeBuildMCP
 - Primary role: Xcode-aware build, test, scheme, destination, and project execution support.
-- This bundle expects the default XcodeBuildMCP workflow set to be enabled in Codex sessions, including coverage, UI automation, logging, device, macOS, project discovery, project scaffolding, session management, simulator, simulator management, Swift package, utilities, and the Xcode IDE bridge workflow when live Xcode refresh or Xcode-side tool bridging is needed.
-- Treat `doctor` and `workflow-discovery` as conditional XcodeBuildMCP capabilities, not default bundle requirements. `doctor` requires `XCODEBUILDMCP_DEBUG=true`; `workflow-discovery` requires `XCODEBUILDMCP_EXPERIMENTAL_WORKFLOW_DISCOVERY=true`.
+- This bundle expects its qualified XcodeBuildMCP workflow set to be enabled in Codex sessions, including coverage, debugging, UI automation, device, macOS, project discovery, project scaffolding, session management, simulator, simulator management, Swift Package, utilities, and the Xcode IDE bridge workflow when live Xcode refresh or Xcode-side tool bridging is needed. Logging remains available as a capability but is not a standalone workflow in the promoted runtime.
+- Marketplace XcodeBuildMCP must launch through `codex-cli/run-xcodebuildmcp.sh`. The launcher requires the exact promoted portable runtime and refuses ambient Malt, Homebrew, npm, Node, or PATH-installed XcodeBuildMCP fallbacks. The standalone `doctor` CLI is diagnostic-only and is not a default MCP tool requirement.
 - Treat `xcode-ide` as host-gated even when declared in config. Native Xcode IDE bridge proxying requires a compatible macOS/Xcode host; macOS versions below `26` or Xcode versions below `26` should be classified as `xcode-ide-unavailable-host`, then fall back to ordinary XcodeBuildMCP project, simulator, package, logging, and UI automation workflows.
 - For hosts affected by repeated `xcrun mcpbridge` reconnect churn, use the
   source-checkout `codex-cli/xcode-mcp-proxy-manager.sh` helper to keep a local
@@ -71,17 +86,35 @@ This reference describes how MCP-backed tools fit into the Apple Codex workflow.
 
 ### Memory
 - Primary role: persist concise project or workflow facts across long-running work.
+- Use Codex native local memories when they are available and enabled by the
+  user. The plugin must not enable the feature, edit its generated store, or
+  make deterministic routing depend on memory injection.
+- Marketplace and fork-extended profiles do not declare a Memory MCP. A legacy
+  globally configured Memory MCP may remain temporarily while its graph is
+  backed up and native recall is validated.
+- Migrate a legacy graph with
+  `scripts/migrate_memory_mcp_to_native.py`. Its exact private JSONL backup is
+  the rollback source; the native note is a semantic import because Codex does
+  not expose a graph-schema import API.
 - Use when:
   - important context may be lost through compression
   - architectural decisions or recurring gotchas should survive future turns
 - Rule: mirror critical decisions in plain markdown notes as well.
 
 ## Workflow by phase
-- Orchestration: memory for prior decisions and model-native reasoning for plan shape.
-- Discovery: memory for known gotchas, `apple-appdev-workflow:fetch-apple-docs` for current Apple docs, XcodeBuildMCP for project-aware inspection outside Xcode-headless, and the Xcode-headless native tool adapter for project-aware inspection inside Xcode-headless.
-- Architecture: memory for historical constraints and `apple-appdev-workflow:fetch-apple-docs` for framework decisions.
-- Implementation: XcodeBuildMCP for build and test loops outside Xcode-headless, the Xcode-headless native tool adapter for Xcode-hosted build and test loops inside Xcode-headless, and `apple-appdev-workflow:fetch-apple-docs` for API checks.
-- Validation: XcodeBuildMCP first outside Xcode-headless. Inside Xcode-headless, preserve the selected Apple owner, then use native `xcode-tools` first, `xcode-proxy` for missing bridge capabilities, and raw `xcodebuild` fallback only for real host-tool gaps after the gap has been called out explicitly. Convenience-only shell checks are not a valid reason to leave the active host tool lane.
+- Orchestration: the active memory provider for prior decisions and
+  model-native reasoning for plan shape.
+- Discovery: the active memory provider for known gotchas,
+  `apple-appdev-workflow:fetch-apple-docs` for current Apple docs, and the
+  profile-selected Xcode-aware provider for project inspection.
+- Architecture: the active memory provider for historical constraints and
+  `apple-appdev-workflow:fetch-apple-docs` for framework decisions.
+- Implementation: the profile-selected Xcode-aware provider for build and test
+  loops and `apple-appdev-workflow:fetch-apple-docs` for API checks.
+- Validation: XcodeBuildMCP MCP tools first in MCP-backed product profiles,
+  pinned XcodeBuildMCP CLI first in `public-portal`, and native `xcode-tools`
+  first in Xcode-headless. Raw `xcodebuild` remains a narrow fallback after the
+  concrete provider gap has been stated.
 
 ## Setup files in this bundle
 - `codex-cli/config.mcp.toml`

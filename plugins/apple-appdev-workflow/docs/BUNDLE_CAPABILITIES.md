@@ -27,6 +27,7 @@ fork-extended, conditional, or still only a future workstream.
 | --- | --- | --- |
 | Core orchestrator routing | Implemented and validated | Broad Apple work starts at `apple-app-orchestrator` and routes into domain owners. |
 | Hook-native stock-Codex owner routing | Implemented and validated | A Marketplace-installed `UserPromptSubmit` hook deterministically injects the top-level owner without `routerSelection`; stock Desktop passed 12/12 and live Xcode CodingAssistant passed 9/9. Public release remains a separate release gate. |
+| Hook-native final-contract guard | Implemented, source/artifact validated | A `Stop` hook checks routed turns for fully qualified activated skills and lane section order, requests at most one correction, and fails open on internal errors. Exact-package Desktop and live Xcode trust/hash requalification remains pending. |
 | Bootstrap for SwiftUI iOS/macOS apps | Implemented and validated | Greenfield SwiftUI app scaffolding, baseline alignment, validation, and handoff are supported. |
 | Existing Xcode project and Swift package adoption | Implemented and validated | Non-destructive assessment, support/risk reporting, and handoff are supported. |
 | Optional local SPM package layout during bootstrap | Implemented and validated | Minimal package structure and ownership handoff are supported when explicitly requested. |
@@ -34,6 +35,8 @@ fork-extended, conditional, or still only a future workstream.
 | SwiftUI specialist guidance | Implemented and validated | Official SwiftUI specialist topics are folded into existing SwiftUI UI-patterns, view-refactor, design-system, and performance stations with on-demand references and validation gates. Exact SDK 27 API claims remain conditional on local SDK or Apple-doc evidence. |
 | UIKit modernization station | Implemented, guidance-first | Existing UIKit and mixed UIKit apps can be audited or scoped for `UIScreen`/`mainScreen`, orientation-for-layout, scene lifecycle, and safe-area/layout-margin modernization with completeness and mutation gates. Project, build, and runtime proof still depend on local tools and app context. |
 | XcodeBuildMCP-backed execution | Conditional | Expected default execution path when the full MCP surface and host prerequisites are available. |
+| Marketplace MCP ownership | Implemented and locally qualified | A materialized, symlink-free Marketplace artifact declares direct-streamable-HTTP Sosumi and locked portable XcodeBuildMCP with no npm runtime payload; installed-plugin attribution plus fresh-session Sosumi and XcodeBuildMCP smokes passed. Codex native memory replaces the plugin-bundled Memory MCP continuity role, while a preserved legacy graph remains the fallback until native recall qualifies. |
+| Public-portal native and CLI execution | Conditional, submission blocked | The rendered upload profile contains hook-native routing, declares no MCP servers, uses native Xcode tools inside Xcode, pinned XcodeBuildMCP and Sosumi CLI transports elsewhere, and optional Codex-native memories for recall. The live portal draft parsed all 44 skills but exposed no retained hook/router/package surface, so public distribution is not yet qualified. |
 | Xcode-headless native-tool execution | Conditional | Xcode CodingAssistant uses native `xcode-tools` first, optional `xcode-proxy` for missing bridge capabilities, and no plugin-declared XcodeBuildMCP. |
 | Release operations, ASO, release notes, observability, and manual validation | Implemented, guidance-first | The bundle provides structured plans, checks, and recommendations, not hands-off external automation. |
 | Xcode security-hardening audit | Implemented, guidance-first | The bundle can audit Xcode build-setting, diagnostic, and entitlement hardening posture, then propose mutation-gated changes that still require explicit user approval and project validation. |
@@ -44,10 +47,15 @@ fork-extended, conditional, or still only a future workstream.
 
 ## Artifact Profiles
 
-The bundle source is validated through four distinct artifact surfaces:
+The bundle source is validated through five distinct artifact surfaces:
 
 - `marketplace`: official-compatible payload with the default-discovered hook,
   neutral routing policy, public docs only, and no retired carry metadata.
+- `public-portal`: upload-compatible product payload with the same hook and
+  routing core, supported `Developer Tools` category, no plugin-managed MCP
+  declaration or npm runtime payload, pinned CLI execution guidance, and
+  optional Codex-native memory. This describes the rendered ZIP; public install
+  equivalence remains blocked on positive hook-retention evidence.
 - `fork-extended`: product-shaped payload for the fork host that uses the same
   carry-free plugin manifest and adds only the declarative routing-history doc
   beyond marketplace docs.
@@ -64,11 +72,12 @@ fork-extended product payload.
 
 ### Core orchestration
 - `apple-app-orchestrator` is the default entrypoint for nearly all Apple app work in this bundle.
-- The product profiles ship a default-discovered `UserPromptSubmit` hook plus a
-  neutral routing policy and compact top-level owner kernel. Stock CLI evidence
+- The product profiles ship default-discovered `UserPromptSubmit` and `Stop`
+  hooks plus a neutral routing policy and compact top-level owner kernel. Stock CLI evidence
   proves pre-sampling developer-context injection for natural Apple requests,
   literal plugin-chip text, and explicit focused-skill suppression without
-  `routerSelection` in the Marketplace manifest.
+  `routerSelection` in the Marketplace manifest; source and artifact tests
+  separately prove bounded, one-retry final-contract enforcement.
 - `apple-bootstrap-orchestrator` is the bootstrap-domain expediter for broad app-creation and project or package adoption workflows.
 - `apple-review-orchestrator` is the review-domain expediter for broad branch-diff and precommit review workflows.
 - `apple-debug-orchestrator` is the debug-domain expediter for broad runtime diagnosis workflows.
@@ -138,8 +147,23 @@ fork-extended product payload.
 ### Apple-platform documentation support
 - `fetch-apple-docs` for official Apple documentation, HIG pages, WWDC transcripts, and related Apple references.
 
-### MCP-backed execution model
+### Execution-provider model
 - `XcodeBuildMCP` is the expected default Xcode-aware execution path once a project exists outside Xcode-headless.
+- Marketplace and fork-extended artifacts declare only direct Sosumi and the
+  locked portable XcodeBuildMCP server. They ship no npm package metadata,
+  `mcp-remote`, or Memory MCP. Native memory remains user-controlled, and the
+  lossless legacy-graph backup/migration helper never disables the source MCP.
+- In the `public-portal` profile, the absence of plugin-managed MCP servers is
+  intentional. Xcode CodingAssistant uses native `xcode-tools`; Desktop, CLI,
+  and connected IDE hosts with shell execution use the pinned
+  `xcodebuildmcp@2.3.2` CLI. Direct `xcodebuild` or `swift` commands remain
+  narrow fallbacks after a concrete CLI or host gap is stated.
+- Public-portal Apple-documentation work keeps `fetch-apple-docs` as the owner
+  and uses the pinned Sosumi CLI transport or direct Sosumi HTTP.
+- Public-portal continuity uses Codex native local memories only when the user
+  enabled them. Required project and release facts remain in checked-in
+  Markdown; the plugin neither enables memories nor depends on graph-style
+  memory operations.
 - In Xcode CodingAssistant or the `xcode-headless` profile, native
   `xcode-tools` owns Xcode-aware file, build, test, documentation, issue,
   preview, and project operations, but the Apple workflow graph and route
@@ -147,8 +171,8 @@ fork-extended product payload.
   extension for missing native capabilities, and `codex-fork-headless` is the
   deterministic orchestration backend rather than the default owner of native
   Xcode work.
-- The bundle now expects the default `XcodeBuildMCP` workflow set, including coverage, debugging, device, logging, macOS, project discovery, project scaffolding, session management, simulator, simulator management, Swift package, UI automation, utilities, and the Xcode IDE bridge workflow when live Xcode refresh is required.
-- XcodeBuildMCP diagnostic and workflow-discovery capabilities are known package capabilities, but they are conditional: `doctor` requires `XCODEBUILDMCP_DEBUG=true`, and `workflow-discovery` requires `XCODEBUILDMCP_EXPERIMENTAL_WORKFLOW_DISCOVERY=true`. They are not enabled by default for marketplace installs.
+- The bundle expects the qualified XcodeBuildMCP workflow set, including coverage, debugging, device, macOS, project discovery, project scaffolding, session management, simulator, simulator management, Swift Package, UI automation, utilities, and the Xcode IDE bridge workflow when live Xcode refresh is required. Logging remains available as a capability but is not a standalone workflow in the promoted runtime.
+- Marketplace XcodeBuildMCP runs through a plugin-owned portable release pinned by npm integrity, registry signatures, SLSA provenance, upstream commit, and release-asset SHA-256. `@latest` is used only as a read-only candidate-discovery signal; it is never executed directly. The standalone doctor is available through the plugin launcher but is not a required MCP tool.
 - The `xcode-ide` workflow is host-gated. On hosts below macOS `26` or Xcode `26`, classify native Xcode IDE proxy failures as `xcode-ide-unavailable-host` and fall back to ordinary XcodeBuildMCP project, simulator, Swift package, logging, and UI automation workflows.
 - Fork-local source checkouts include an opt-in persistent `mcp-proxy` manager
   for `xcrun mcpbridge` at `http://127.0.0.1:9876/mcp`. This is a host
@@ -157,7 +181,10 @@ fork-extended product payload.
 - The same proxy can be registered into Xcode's separate CodingAssistant Codex
   home for manual Xcode-surface validation while leaving Xcode's built-in
   `xcode-tools` MCP entry intact.
-- Marketplace installs should use the plugin-declared MCP server configuration in `.mcp.json`. Fork-local source checkouts also keep helper scripts for manual MCP setup and drift checks.
+- Full Marketplace installs should use the plugin-declared MCP server
+  configuration in `.mcp.json`. Public-portal installs intentionally have no
+  `.mcp.json`; fork-local source checkouts keep helper scripts for manual MCP
+  setup and drift checks.
 - Plugin-managed source, rendered marketplace artifacts, and installed cache
   roots resolve shared skill resources from plugin-root `docs/`, `references/`,
   and `skills/`. They must not include legacy `skills/docs`,
@@ -260,7 +287,7 @@ Not implemented as first-class automation:
 - upload/review API integrations as a bundle requirement
 
 ### Runtime automation expectations
-The bundle expects a full `XcodeBuildMCP` surface in session, but the bundle itself does not guarantee Codex client behavior. If the session exposes a reduced MCP surface, that is treated as configuration drift to fix, not a different intended operating mode.
+The bundle expects a full `XcodeBuildMCP` surface in session, but the bundle itself does not guarantee Codex client behavior. If the session exposes a reduced MCP surface, that is treated as configuration drift to fix, not a different intended operating mode. The marketplace launcher does not fall back to a PATH-installed Malt, Homebrew, npm, Node, or XcodeBuildMCP runtime; on first use it downloads and verifies only the exact locked portable release. Trusted routing hooks use `/usr/bin/python3`, not the optional Node REPL or an ambient package-manager runtime. Sosumi connects directly over Streamable HTTP and has no local runtime dependency.
 
 ## Manual or Human Required
 

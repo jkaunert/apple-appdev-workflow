@@ -5,59 +5,91 @@ Use this bundle's MCP metadata so the Apple workflow can reach its external tool
 ## Included MCPs
 
 - `sosumi` for Apple-doc MCP fetch/search
-- `XcodeBuildMCP` for Xcode integration
-- `memory` for durable workflow context
+- `apple-appdev-xcodebuildmcp` for plugin-owned XcodeBuildMCP integration
 
-The current bundle setup standardizes on Node/npm-backed launch paths for all
-three MCPs.
+Sosumi connects directly to `https://sosumi.ai/mcp` over Streamable HTTP and
+requires no local proxy or Node runtime. XcodeBuildMCP uses its separately
+signed upstream portable runtime through a plugin-owned launcher and never
+resolves Node, npm, Malt, Homebrew, or `xcodebuildmcp` from ambient `PATH`.
+Durable continuity uses Codex native memory when the user enabled it; a legacy
+Memory MCP may coexist temporarily during lossless backup and recall testing.
+
+The paired `0.2.2-beta.1` release train keeps this ownership contract: the
+Marketplace profile provisions the exact locked XcodeBuildMCP runtime on first
+use, while the separate Xcode companion remains hook-only and does not register
+or provision an MCP server.
+
+## Public portal profile
+
+The `public-portal` artifact intentionally declares no MCP servers and omits
+`.mcp.json`, `package.json`, `package-lock.json`, and `codex-cli`. This is the
+upload-compatible profile for a portal that accepts skills but rejects bundled
+MCP declarations.
+
+Its provider contract is:
+
+- Xcode CodingAssistant: native `xcode-tools`
+- Codex Desktop, CLI, and connected IDE hosts with shell execution: pinned
+  `npx -y xcodebuildmcp@2.3.2 ...` workflow commands
+- Apple documentation: the pinned Sosumi CLI transport, then direct Sosumi HTTP
+- continuity: Codex native local memories when available and enabled by the
+  user; checked-in Markdown remains authoritative
+
+The plugin does not silently install global CLIs, edit `config.toml`, enable
+memories, or provision Xcode's separate Codex home. See
+`references/public-portal-tool-adapter.md` for the exact fallback order.
 
 The active `sosumi` endpoint is declared in `.mcp.json`. That file uses the
 official direct server-map shape documented for bundled Codex plugin MCP
 servers. Use it as the source of truth if your Codex install asks you to review
 or grant MCP server configuration.
 
-## Marketplace install
+## Full Marketplace install
 
 Marketplace installs should use the plugin-declared MCP server configuration in `.mcp.json`. After installing the plugin, open the Codex MCP servers settings and confirm these servers are connected:
 
 - `sosumi`
-- `XcodeBuildMCP`
-- `memory`
+- `apple-appdev-xcodebuildmcp`
 
 If the UI reports no MCP servers, the plugin has not been granted or materialized its MCP configuration yet. Reopen the plugin install flow, grant the requested MCP setup, then restart Codex.
 
-## Local CLI runtime
+The first `apple-appdev-xcodebuildmcp` start may take several minutes. Its
+plugin-owned launcher downloads only the exact promoted portable archive,
+verifies the locked size and SHA-256, validates archive containment and the
+bundled Node signature, and installs it atomically under the user's Application
+Support directory. Concurrent starts share a per-version/platform lock. No
+global Node, npm, Malt, Homebrew, or XcodeBuildMCP installation is consulted.
 
-For source checkouts or manual local testing, install the pinned CLI runtime
-first:
+The two trusted routing hooks run with macOS system `/usr/bin/python3`; the
+optional Codex Node REPL is not a hook or MCP installation dependency.
+
+## Optional local XcodeBuildMCP pre-provisioning and recovery
+
+Marketplace users do not need this step. For source checkouts, offline
+pre-provisioning, or manual recovery, provision the locked portable
+XcodeBuildMCP runtime explicitly:
 
 ```bash
 cd /path/to/apple-appdev-workflow
 bash ./codex-cli/setup-plugin-runtime.sh
 ```
 
-Verify the pinned local runtime:
+Verify it:
 
 ```bash
 cd /path/to/apple-appdev-workflow
 bash ./codex-cli/verify-plugin-runtime.sh
 ```
 
-That installs the local CLI surface under
-`~/.codex/plugin-runtime/apple-appdev-workflow/node_modules/.bin` for:
+That provisions the exact promoted XcodeBuildMCP portable release under
+`~/Library/Application Support/Apple AppDev Workflow/runtime/xcodebuildmcp`.
+Use `./codex-cli/run-xcodebuildmcp.sh` for both MCP transport and CLI fallback.
+Rerun setup after updating the promoted runtime lock. It does not install npm
+packages for Sosumi or memory.
 
-- `sosumi`
-- `xcodebuildmcp`
-- `xcodebuildmcp-doctor`
-- `mcp-server-memory`
-- `mcp-remote`
-- `mcp-proxy`
-
-The pinned runtime dependencies are declared in `package.json`. Rerun setup
-after updating package metadata.
-
-Before packaging or installing a refreshed runtime into a host-specific Codex
-home, run:
+Fork-local proxy recovery tooling still has a separate npm dependency surface.
+Before packaging or installing that optional proxy runtime into a host-specific
+Codex home, run:
 
 ```bash
 npm audit --omit=dev
@@ -525,10 +557,12 @@ place and adds only `xcode-proxy -> http://127.0.0.1:9876/mcp`.
 `status` reports `launch_agent_owner: different_runtime` when the active
 LaunchAgent runner belongs to another Codex home. It also reports the current
 native `xcode-tools` `MCP_XCODE_PID` and whether `MCP_XCODE_SESSION_ID` is
-present. The proxy remains external by default so it can expose the broader
-external-bridge inventory; set `XCODE_MCP_PROXY_BIND_XCODE_SESSION=1` only for
-targeted tests that intentionally compare the proxy against Xcode's native
-agent-mode bridge context.
+present. The default proxy child resolves the currently running selected Xcode
+PID at launch, exports only that value to `mcpbridge`, and explicitly ignores
+the configured session id. This keeps the helper tools discoverable on Xcode 27
+Beta 5 without carrying a stale session across launches. Set
+`XCODE_MCP_PROXY_BIND_XCODE_SESSION=1` only for targeted tests that intentionally
+compare the proxy against Xcode's full configured PID/session context.
 
 The normal Xcode-headless proxy surface is helper-only. Native proxy launches
 default `XCODE_MCP_PROXY_TOOL_ALLOWLIST` to
@@ -547,11 +581,22 @@ Xcode-headless proxy health evidence only. It does not clear future AFK auth
 prompt risk, desktop-owned `XcodeBuildMCP` overlap, or any marketplace,
 fork-extended, GUI, prompt-matrix, remote-control, or public-release gate.
 
+2026-08-15 Xcode 27 Beta 5 / build `27A5237l` compatibility checkpoint: an
+unbound external `mcpbridge` advertised 54 tools but omitted
+`XcodeGetCurrentFile` and `XcodeListWindows`; the same bridge with only the live
+Xcode PID advertised 53 tools including both helpers. Adding the configured
+session id did not change either inventory. The helper proxy must therefore bind
+the live PID dynamically while continuing to omit `MCP_XCODE_SESSION_ID`. With
+that shape and the default allowlist, live `tools/list` exposed exactly the two
+helper tools, `XcodeListWindows` resolved the open project, and
+`XcodeGetCurrentFile` returned a non-error result for the resolved tab.
+
 In launchd mode, the generated runner supervises Xcode's native bridge context
 without making periodic MCP `listTools` calls. It reads the selected Xcode
 process PID every two seconds by default and restarts only the proxy child when
-that PID changes, falling back to Xcode CodingAssistant's configured
-`MCP_XCODE_PID` only when the process is not discoverable. This
+that PID changes. Each new default bridge child exports that live PID and
+explicitly clears `MCP_XCODE_SESSION_ID`; the configured PID remains only a
+supervisor diagnostic fallback when the process is not discoverable. This
 prevents a stale upstream `mcpbridge` child from surviving an Xcode restart and
 avoids racing the first Xcode assistant discovery pass, because the config PID
 can update only after the embedded app-server starts. `MCP_XCODE_SESSION_ID` is
@@ -631,7 +676,8 @@ bash ./codex-cli/xcode-mcp-proxy-manager.sh xcode-codingassistant-recover-tool-s
 ```
 
 That recovery path preserves native `xcode-tools`, verifies the separate
-`xcode-proxy` URL endpoint with MCP `listTools`, registers only a missing
+`xcode-proxy` URL endpoint with MCP `listTools`, requires both helper tools even
+when `/ping` is already healthy, registers only a missing
 separate `xcode-proxy` entry, and then sends `TERM` only to Xcode's embedded
 `codex app-server` child. The next Xcode assistant request starts a fresh
 app-server and should rediscover both `xcode-tools` and `xcode-proxy`. To audit
@@ -689,6 +735,9 @@ Xcode-hosted agent-mode bridge exposed 19 tools and omitted `XcodeListWindows`
 and `XcodeGetCurrentFile`, while the restarted external proxy exposed 21 tools
 including both. Treat that as a tool-surfacing gap to measure with both
 registrations present, not as a reason to rename or overwrite `xcode-tools`.
+On Xcode 27 Beta 5 / build `27A5237l`, the unbound external inventory also
+omits those two helper tools; use the manager's default dynamic live-PID proxy
+binding rather than importing Xcode's configured session id.
 
 If you are debugging XcodeBuildMCP directly, note that its `xcode-ide` workflow
 contains `xcode_ide_list_tools`, `xcode_ide_call_tool`, and
@@ -969,57 +1018,60 @@ bash ./codex-cli/codex-fork-mcp-proxy-manager.sh xcode-codingassistant-remove
 
 ## Manual CLI setup
 
-Manual CLI configuration is optional for normal marketplace installs. Prefer the
-plugin-declared `.mcp.json` path unless you are deliberately configuring a
-source checkout or CLI-only environment.
+Manual CLI configuration is optional for normal Marketplace installs. Prefer
+the plugin-declared `.mcp.json` path unless you are deliberately configuring a
+source checkout or CLI-only environment. The product plugin owns exactly two
+servers: direct Streamable HTTP `sosumi` and locked portable
+`apple-appdev-xcodebuildmcp`.
 
-Equivalent manual setup uses `codex mcp add`:
+For a source-only home, copy the direct Sosumi table from
+`codex-cli/config.mcp.toml`. Do not use `npx` or `mcp-remote` for this endpoint.
+Do not add a new Memory MCP: use Codex native memory when the user enabled it.
+
+Do not manually add a global `XcodeBuildMCP` server for a marketplace install.
+Codex gives global configuration precedence over a same-purpose plugin server,
+which makes attribution ambiguous and can restore an incompatible ambient
+runtime. Provision the plugin-owned portable runtime and remove only shadowing
+global XcodeBuildMCP tables with:
 
 ```bash
-codex mcp add memory \
-  --env MEMORY_FILE_PATH="$HOME/.codex/memory.json" \
-  -- npx -y @modelcontextprotocol/server-memory@2026.1.26
-
-codex mcp add sosumi \
-  -- npx -y mcp-remote@0.1.38 \
-  https://sosumi.ai/mcp
-
-codex mcp add XcodeBuildMCP \
-  --env XCODEBUILDMCP_ENABLED_WORKFLOWS="coverage,debugging,device,logging,macos,project-discovery,project-scaffolding,session-management,simulator,simulator-management,swift-package,ui-automation,utilities,xcode-ide" \
-  -- npx -y xcodebuildmcp@2.3.2 mcp
+bash ./codex-cli/setup-plugin-xcodebuildmcp.sh --codex-home "$CODEX_HOME"
 ```
 
-After manual `codex mcp add`, set the fork-local timeout override in
-`$CODEX_HOME/config.toml`:
+The helper makes a timestamped backup before changing `config.toml`. It leaves
+Memory MCP, Sosumi, native memory, native Xcode tools, `xcode-proxy`, Malt,
+Homebrew, and global binaries untouched. Restart the affected Codex host
+afterward.
 
-```toml
-[mcp_servers.XcodeBuildMCP]
-tool_timeout_sec = 600
-```
-
-The source helper applies this automatically. Keep the override in disposable
-validation homes too; otherwise cold simulator tests can hit the default Codex
-MCP tool-call envelope before a healthy `xcodebuild test` completes.
-
-The source helper:
-
-- defaults `memory` to `~/.codex/memory.json`
-- reuses that file automatically if it already exists
-- can restore from a backup if you set `MEMORY_RESTORE_SOURCE=/path/to/memory.json`
-- sets `XcodeBuildMCP` `tool_timeout_sec` to `600` by default
-
-Example restore:
+If a legacy Memory MCP graph exists, preserve it and stage a semantic native
+memory migration explicitly:
 
 ```bash
 cd /path/to/apple-appdev-workflow
-MEMORY_RESTORE_SOURCE="/path/to/backup/memory.json" \
-bash ./codex-cli/setup-codex-mcp.sh
+python3 ./scripts/migrate_memory_mcp_to_native.py \
+  --codex-home "$HOME/.codex"
 ```
 
-Source checkouts can verify XcodeBuildMCP config with:
+The migration creates a private byte-for-byte JSONL backup, normalized export,
+config snapshot, manifest, and checksums before writing the native-memory note.
+It does not edit `config.toml`, disable the legacy MCP, or change the source
+graph. Native memory has no documented graph-import API, so keep the exact raw
+backup and retire the legacy server only after a fresh-session recall check.
+
+The combined explicit helper can perform the same migration and provision the
+locked XcodeBuildMCP runtime:
 
 ```bash
-bash ./codex-cli/verify-xcodebuildmcp.sh
+bash ./codex-cli/setup-codex-mcp.sh \
+  --codex-home "$HOME/.codex" \
+  --migrate-memory
+```
+
+Source checkouts can verify the exact portable runtime and non-shadowed config
+with:
+
+```bash
+bash ./codex-cli/setup-plugin-xcodebuildmcp.sh --codex-home "$CODEX_HOME" --check
 ```
 
 ## Config Surfaces
@@ -1032,7 +1084,6 @@ bash ./codex-cli/verify-xcodebuildmcp.sh
   - `coverage`
   - `debugging`
   - `device`
-  - `logging`
   - `macos`
   - `project-discovery`
   - `project-scaffolding`
@@ -1045,20 +1096,34 @@ bash ./codex-cli/verify-xcodebuildmcp.sh
   - `xcode-ide`
 - If a Codex session exposes only simulator tools, the MCP configuration is incomplete. Re-run the marketplace MCP grant flow or manual CLI setup, confirm `XCODEBUILDMCP_ENABLED_WORKFLOWS` is present in Codex MCP config, and restart Codex.
 
-Conditional XcodeBuildMCP capabilities:
+Runtime promotion policy:
 
-- `doctor` is available in `xcodebuildmcp@2.3.2`, but the MCP package only exposes it when `XCODEBUILDMCP_DEBUG=true`. Keep it opt-in for targeted diagnostics rather than turning verbose debug mode on for every install.
-- `workflow-discovery` is available in `xcodebuildmcp@2.3.2`, but the MCP package only exposes it when `XCODEBUILDMCP_EXPERIMENTAL_WORKFLOW_DISCOVERY=true`. Keep it opt-in because it can mutate enabled workflows at runtime.
+- The marketplace never executes `@latest`. `runtime-lock.json` records the
+  exact version, npm integrity, registry signature identity, SLSA provenance,
+  upstream Git commit, release-asset size and SHA-256, and license hashes.
+- `resolvedFrom: latest` means “latest at qualification time,” not a floating
+  dependency. Run
+  `python3 scripts/check_xcodebuildmcp_runtime_lock.py --online --require-latest`
+  to detect drift. A new latest is a candidate until its attestations, archive,
+  signed Node runtime, CLI inventory, MCP identity, required tools, and routing
+  matrix pass; only then replace the exact lock.
+- The `doctor` CLI is available through
+  `./codex-cli/run-xcodebuildmcp.sh doctor`. It is not part of the default MCP
+  tool requirement.
 - `xcode-ide` can be declared in config on all hosts, but native Xcode IDE bridge proxying requires a compatible host. Treat macOS versions below `26` or Xcode versions below `26` as `xcode-ide-unavailable-host`, not as a plugin config regression. On macOS `15.7.5` with Xcode `26.3`, `xcrun --find mcpbridge` succeeds but `xcrun mcpbridge --help` fails with a missing `AppSandbox` symbol, so ordinary XcodeBuildMCP project, simulator, package, logging, and UI automation workflows remain the supported fallback.
 
 ## Workflow expectations
 
-- `apple-app-orchestrator` should assume these MCPs are available when installed.
+- `apple-app-orchestrator` should assume direct Sosumi and the qualified
+  XcodeBuildMCP surface are available in Marketplace/fork-extended installs.
 - Apple documentation retrieval should route through `fetch-apple-docs`, which
   may use the plugin-owned `sosumi` MCP as its preferred transport.
-- If MCP startup fails temporarily, the CLI fallbacks remain available via:
-  - `npm exec --prefix "$HOME/.codex/plugin-runtime/apple-appdev-workflow" -- sosumi ...`
-  - `npm exec --prefix "$HOME/.codex/plugin-runtime/apple-appdev-workflow" -- xcodebuildmcp ...`
+- Conditional XcodeBuildMCP capabilities remain host-dependent, especially the
+  native `xcode-ide` bridge, even when the portable MCP runtime is healthy.
+- If MCP startup fails temporarily, the CLI fallbacks remain available in this
+  bounded order:
+  - direct Sosumi HTTP under `fetch-apple-docs`
+  - `bash ./codex-cli/run-xcodebuildmcp.sh ...`
   - `bash ./codex-cli/xcode-mcp-proxy-manager.sh start`
   - `bash ./codex-cli/codex-fork-mcp-proxy-manager.sh start`
 - Do not copy `node_modules/` into the plugin install source. Codex indexes

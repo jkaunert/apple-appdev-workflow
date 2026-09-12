@@ -6,7 +6,10 @@
     "LICENSE",
     "agents",
     "assets",
+    "codex-cli/run-xcodebuildmcp.sh",
     "codex-cli/setup-plugin-runtime.sh",
+    "codex-cli/setup-plugin-xcodebuildmcp.sh",
+    "codex-cli/setup-xcodebuildmcp-runtime.sh",
     "codex-cli/verify-plugin-runtime.sh",
     "docs/BUNDLE_CAPABILITIES.md",
     "docs/GIT_WORKFLOW_SPECIALIST.md",
@@ -16,12 +19,15 @@
     "docs/WORKFLOW_QUICKSTART.md",
     "hooks",
     "-hooks/test",
-    "package-lock.json",
-    "package.json",
     "references",
     "-references/staged-smoke-coverage-matrix.json",
     "routing",
+    "runtime",
+    "scripts/check_xcodebuildmcp_runtime_lock.py",
+    "scripts/migrate_memory_mcp_to_native.py",
+    "scripts/reconcile_plugin_xcodebuildmcp_registration.py",
     "skills"
   ],
-  "stripped_manifest_keys": []
+  "stripped_manifest_keys": [],
+  "plugin_version_override": "0.2.2-beta.1"
 }

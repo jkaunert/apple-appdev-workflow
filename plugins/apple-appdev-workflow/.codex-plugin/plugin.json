@@ -1,9 +1,10 @@
 {
   "name": "apple-appdev-workflow",
-  "version": "0.2.0",
+  "version": "0.2.2-beta.1",
   "description": "Apple iOS and macOS workflow plugin with deterministic hook-native routing.",
   "author": {
     "name": "Joshua Kaunert",
+    "email": "support@cuatrotresdos.uno",
     "url": "https://github.com/jkaunert/apple-appdev-workflow"
   },
   "homepage": "https://github.com/jkaunert/apple-appdev-workflow",
@@ -20,7 +21,7 @@
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Apple AppDev Workflow",
-    "shortDescription": "Apple app workflow bundle for Codex.",
+    "shortDescription": "Apple app workflows for Codex",
     "longDescription": "Orchestrated Codex workflow for bootstrapping, implementing, reviewing, debugging, and releasing Apple platform apps. A trusted UserPromptSubmit hook deterministically selects the top-level workflow owner; explicit $apple-appdev-workflow:<skill> invocation remains the fallback.",
     "developerName": "Joshua Kaunert",
     "category": "Coding",
@@ -30,6 +31,7 @@
       "Write"
     ],
     "websiteURL": "https://github.com/jkaunert/apple-appdev-workflow",
+    "supportURL": "https://github.com/jkaunert/apple-appdev-workflow/issues",
     "defaultPrompt": [
       "Create a new SwiftUI iOS app."
     ],

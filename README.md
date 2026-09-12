@@ -7,7 +7,7 @@ deterministic, pre-sampling top-level routing: a trusted `UserPromptSubmit`
 hook infers the intent of an Apple-development request and injects the owning
 workflow before the model responds.
 
-Version `0.2.0` runs that routing path on stock Codex without the retired
+Version `0.2.2-beta.1` runs that routing path on stock Codex without the retired
 fork-only `routerSelection` carry. Fully qualified skill invocation remains the
 explicit fallback when hooks are disabled, declined, changed, or restricted.
 
@@ -60,17 +60,23 @@ release-defining extension completed after July 13, 2026:
 - explicit routing policy, top-level owner injection, negative cases, resume
   behavior, and post-compaction behavior
 - removal of the fork-only router-selection dependency from the product path
-- a 12-case signed stock Codex Desktop routing matrix
-- a separate 9-case live Xcode CodingAssistant compatibility matrix
-- public-release gates, a clean Git Marketplace distribution, and the published
-  `v0.2.0` release
+- authored macOS and Swift Package prompt provenance in the deterministic hook
+- a fresh 12-case signed stock Codex Desktop routing matrix
+- a separate 11-case live Xcode CodingAssistant compatibility matrix for the
+  paired hook-only companion
+- plugin-owned XcodeBuildMCP 2.7.0 with a locked, audited runtime and direct
+  Sosumi; native Codex memory remains outside the plugin MCP surface
+- public-release gates and the `v0.2.2-beta.1` prerelease
 
-The private qualification source records 25 post-cutoff commits (21 non-merge
+The private qualification source for this beta is the exact merged source at
+`722fda0943993fe2506e3a32dd6b12bbd1c92511`. The public artifact is rendered
+from that private `main` source; the public repository contains generated
+distribution material only.
+
+The earlier private qualification source records 25 post-cutoff commits (21 non-merge
 commits). Relative to its pre-window baseline, that train changed 79 files with
-10,499 insertions and 1,004 deletions. The public artifact maps back to exact
-private source commit `c30409e917a5bcdb02010c0b78b4971c2b3fa42a` and public
-release commit `c3702d917fedaa6674a750695d3173e36d714522` in the
-[release provenance](docs/RELEASE_PROVENANCE.md).
+10,499 insertions and 1,004 deletions. The historical `v0.2.0` lineage remains
+recorded in the [release provenance](docs/RELEASE_PROVENANCE.md).
 
 ### How Codex, GPT-5.5, and GPT-5.6 were used
 
@@ -122,22 +128,26 @@ and route automatically. The explicit fallback is:
 $apple-appdev-workflow:apple-app-orchestrator Review this iOS app and tell me if it is ready for release.
 ```
 
-The bundle declares `sosumi`, `memory`, and `XcodeBuildMCP` in its plugin-owned
-MCP configuration. Node.js and npm are needed when those npm-backed MCP tools
-are materialized.
+The bundle declares direct `sosumi` and plugin-owned `XcodeBuildMCP` in its MCP
+configuration. The XcodeBuildMCP runtime is pinned and provisioned by the
+plugin-owned scripts; the hook itself uses `/usr/bin/python3` and has no Node
+or Malt dependency. Native Codex memory is not replaced by a bundled Memory
+MCP.
 
 ## What Ships Here
 
-- the exact qualified `0.2.0` Marketplace profile under
+- the exact qualified `0.2.2-beta.1` Marketplace profile under
   `plugins/apple-appdev-workflow/`
+- authored macOS and Swift Package routing signals, plus the locked
+  XcodeBuildMCP runtime
 - deterministic natural-prompt and textual-chip routing through the plugin hook
 - explicit fully qualified skill invocation as a security-boundary fallback
 - Apple workflow skills, references, assets, and plugin-owned MCP declarations
 
 The Xcode CodingAssistant companion is compatible with the same routing
-payload but uses a separate signed provisioning envelope. It is intentionally
-not included in this Marketplace repository or the `0.2.0` Marketplace
-artifact.
+payload but uses a separate signed and notarized provisioning envelope. The
+`AppleAppDevXcodeHeadlessInstaller-0.2.2-beta.1.dmg` is intentionally not
+included in this Marketplace repository or the Marketplace artifact.
 
 ## Trust Boundary
 

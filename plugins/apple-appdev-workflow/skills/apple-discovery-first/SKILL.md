@@ -33,7 +33,10 @@ metadata:
 6. Reuse established factories and helpers before creating new ones.
 7. Use `apple-appdev-workflow:fetch-apple-docs` when current Apple framework, HIG, WWDC, forum, or Swift-DocC docs are needed.
 8. Prefer `apple-appdev-workflow:fetch-apple-docs` over generic web search when the need is official, current Apple documentation rather than broader ecosystem context.
-9. Use `memory` when prior architecture or implementation gotchas should be preserved across turns.
+9. Use the active memory provider when prior architecture or implementation
+   gotchas should be preserved across turns. In `public-portal`, prefer Codex
+   native memories when the user enabled them; keep required facts in
+   checked-in Markdown and do not require Memory MCP.
 10. Document findings, the selected working root, and the selected minimal integration path.
 
 ## Guardrails

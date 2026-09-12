@@ -18,7 +18,7 @@ Use this skill to reliably fetch official Apple documentation as Markdown when c
 
 This skill can be carried out through three transport surfaces:
 - MCP-backed fetch or lookup tools
-- a CLI fetcher such as `@nshipster/sosumi`
+- the pinned `@nshipster/sosumi` CLI from the upstream `v1.0.2` source tarball
 - direct HTTP to `sosumi.ai`
 
 Those are implementation details of this skill, not separate alternative routes.
@@ -85,7 +85,7 @@ For known or predictable Apple documentation pages, the preferred non-MCP path i
 CLI usage:
 
 ```bash
-npx -y @nshipster/sosumi fetch 'https://developer.apple.com/documentation/swift/array'
+npx -y --package='https://github.com/NSHipster/sosumi.ai/archive/refs/tags/v1.0.2.tar.gz' sosumi fetch 'https://developer.apple.com/documentation/swift/array'
 ```
 
 HTTP usage:
@@ -111,7 +111,9 @@ Search is only for cases where the documentation path is genuinely unknown.
 
 ## Core workflow
 1. If MCP-backed fetch is available and the lookup is straightforward, use it first.
-2. If you already have a `developer.apple.com` URL, prefer `npx -y @nshipster/sosumi fetch '<apple-url>'` with the URL quoted.
+2. If you already have a `developer.apple.com` URL, prefer the pinned command
+   `npx -y --package='https://github.com/NSHipster/sosumi.ai/archive/refs/tags/v1.0.2.tar.gz' sosumi fetch '<apple-url>'`
+   with the URL quoted.
 3. If CLI fetch is unavailable or failing for environment reasons, replace the host with `sosumi.ai` and keep the same path.
 4. If you know the framework and symbol path well enough to construct it directly, do that instead of searching.
 5. If you do not know the exact page path, search the web for the correct `developer.apple.com` page first, then replace the host with `sosumi.ai` or fetch that Apple URL through the CLI.
@@ -134,7 +136,7 @@ If a documentation URL contains parentheses, underscores, or other shell-signifi
 Example:
 
 ```bash
-npx -y @nshipster/sosumi fetch 'https://developer.apple.com/documentation/packagedescription/swiftsetting/strictmemorysafety(_:)'
+npx -y --package='https://github.com/NSHipster/sosumi.ai/archive/refs/tags/v1.0.2.tar.gz' sosumi fetch 'https://developer.apple.com/documentation/packagedescription/swiftsetting/strictmemorysafety(_:)'
 ```
 
 The quoting detail matters only for shell invocation. The underlying fetch path is still just the Apple URL or its Sosumi equivalent.
