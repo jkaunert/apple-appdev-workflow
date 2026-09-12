@@ -1,5 +1,29 @@
 # Release Provenance
 
+## Apple AppDev Workflow 0.2.2-beta.2
+
+This documentation-focused prerelease is rendered from canonical private
+`main` at `2b954c49bd1df757405d74a2cd0c5d9cdfbdcc24` using the `marketplace`
+profile. It keeps the beta.1 routing and MCP ownership contract while moving
+maintainer/runtime manuals out of the bundled downstream documentation.
+
+The public distribution commit and prerelease tag will be recorded here after
+the final clean-install and host qualification gates complete.
+
+### Behavioral payload hashes
+
+| Surface | SHA-256 |
+| --- | --- |
+| `.codex-plugin/plugin.json` | `2630ce8e2616b7a4c56c56676b7a4ca363b010365ad73e446fff573c90f4f324` |
+| `hooks/hooks.json` | `5764ee6b8f736cfa9d084681756c26e4fb1bdd22d62cc4d8e630914622cf5ded` |
+| `hooks/apple_hook.py` | `4bbc6636f5272becbb99841ee76c05ebe5641079825dd2b580355d26674b6f3c` |
+| `hooks/apple_router.mjs` | `8195ca4054b68d9b8815acd38b85cee6a6af7c809fc2e974ba1448255dc657c2` |
+| `hooks/apple_contract_guard.mjs` | `895cef34b9c45ca0ae5557fccde5693854def4d33734acd621494e5090dadfe8` |
+| `routing/router-policy.json` | `df5d4384e7336784d0ee4df7bcd9618d0368c72e1b26f36703db8a3a217e58ca` |
+| `routing/top-level-owner-kernel.md` | `2d00c2577be2174de4aa9b30c7a8f3380e8ded50455dc3d030604d67f7a45949` |
+| `docs/MCP_SETUP.md` | `c2b245d035620b2958583742ad218a5e409b3c4ea7d532f4174215c4deb7f980` |
+| `docs/BUNDLE_CAPABILITIES.md` | `3a445cf09194e42bd9162c375a860373e0c3a23d13ebce1e4d60b2a6d4b1c3f8` |
+
 ## Apple AppDev Workflow 0.2.2-beta.1
 
 This prerelease payload was rendered from the canonical private `main` source
