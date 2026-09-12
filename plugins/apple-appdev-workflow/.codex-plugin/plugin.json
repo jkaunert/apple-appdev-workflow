@@ -1,6 +1,6 @@
 {
   "name": "apple-appdev-workflow",
-  "version": "0.2.2-beta.1",
+  "version": "0.2.2-beta.2",
   "description": "Apple iOS and macOS workflow plugin with deterministic hook-native routing.",
   "author": {
     "name": "Joshua Kaunert",

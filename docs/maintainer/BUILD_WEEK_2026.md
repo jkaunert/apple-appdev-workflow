@@ -29,5 +29,5 @@ Xcode’s native tool provider.
 
 Current releases:
 
-- [Marketplace plugin v0.2.2-beta.1](https://github.com/jkaunert/apple-appdev-workflow/releases/tag/v0.2.2-beta.1)
-- [Xcode companion v0.2.2-beta.1](https://github.com/jkaunert/apple-appdev-xcode-companion/releases/tag/v0.2.2-beta.1)
+- [Marketplace plugin v0.2.2-beta.2](https://github.com/jkaunert/apple-appdev-workflow/releases/tag/v0.2.2-beta.2)
+- [Xcode companion v0.2.2-beta.2](https://github.com/jkaunert/apple-appdev-xcode-companion/releases/tag/v0.2.2-beta.2)

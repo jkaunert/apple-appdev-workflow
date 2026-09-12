@@ -5,12 +5,12 @@ core workflows. The Marketplace profile rendered from current source ships a
 `UserPromptSubmit` hook that deterministically selects the top-level Apple owner
 for natural Apple prompts and the textual forms behind plugin chips before
 model sampling. Stock Desktop passed 12/12 and live Xcode CodingAssistant
-passed 9/9 without `routerSelection`; the bounded source candidate removes the
+passed 11/11 without `routerSelection`; the bounded source candidate removes the
 obsolete projection. Public release remains a separate exact-artifact claim.
 Explicit `$apple-appdev-workflow:<skill>` invocation remains the clearest
 operator control and the required fallback when hooks are disabled or untrusted.
 
-The `0.2.2-beta.1` train additionally qualifies authored macOS and Swift Package
+The `0.2.2-beta.2` train additionally qualifies authored macOS and Swift Package
 prompts (`prompt-signal:macos` and `prompt-signal:swift package`) while keeping
 the neutral Xcode workspace fallback. The Marketplace profile owns the locked
 XcodeBuildMCP runtime; the separate Xcode companion remains hook-only.
