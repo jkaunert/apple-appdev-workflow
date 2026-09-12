@@ -18,6 +18,9 @@
         "swiftdata",
         "uikit",
         "appkit",
+        "swift package",
+        "swiftpm",
+        "package.swift",
         "xcode",
         "xcodebuild",
         "testflight",
@@ -30,8 +33,8 @@
         "Package.swift"
       ],
       "workspaceExtensions": [
-        "xcodeproj",
-        "xcworkspace"
+        "xcworkspace",
+        "xcodeproj"
       ],
       "select": "apple-appdev-workflow:apple-app-orchestrator"
     }

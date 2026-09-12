@@ -10,6 +10,11 @@ obsolete projection. Public release remains a separate exact-artifact claim.
 Explicit `$apple-appdev-workflow:<skill>` invocation remains the clearest
 operator control and the required fallback when hooks are disabled or untrusted.
 
+The `0.2.2-beta.1` train additionally qualifies authored macOS and Swift Package
+prompts (`prompt-signal:macos` and `prompt-signal:swift package`) while keeping
+the neutral Xcode workspace fallback. The Marketplace profile owns the locked
+XcodeBuildMCP runtime; the separate Xcode companion remains hook-only.
+
 For broad app work, start with `$apple-appdev-workflow:apple-app-orchestrator`; it should route to the right specialists. For focused tasks, use the named skill shown in the examples below.
 
 ## Hook Trust
@@ -20,6 +25,14 @@ changed hook definition may require renewed trust. If plugin hooks are declined,
 disabled, or restricted by enterprise policy, use an explicit fully qualified
 skill invocation and do not claim deterministic natural-prompt routing. See
 the official [Codex hooks documentation](https://learn.chatgpt.com/docs/hooks).
+
+Materialized production installs are displayed as **Apple Developer Tools**.
+Their stable machine identity is `apple-developer-tools`, so copied textual
+plugin chips use `plugin://apple-appdev-workflow@apple-developer-tools`. This
+source checkout advertises **Apple Developer Tools (Repo Dev)** under
+`apple-developer-tools-repo-dev` so repo discovery cannot shadow the production
+install. The older `LocalAppleWorkflow` namespace remains an independent
+compatibility marketplace for experimental Electron hosts.
 
 ## Capability Maturity Expectations
 
@@ -313,6 +326,9 @@ Expected behavior:
 - `XcodeBuildMCP` is the default control plane when its workflows are exposed;
   this is a `conditional` execution surface because it depends on the MCP
   server, host toolchain, project shape, and OS/Xcode feature gates.
+- In a `public-portal` install, use Xcode native tools inside Xcode and the
+  pinned `xcodebuildmcp@2.3.2` CLI on shell-capable Desktop, CLI, or connected
+  IDE hosts. The missing MCP server is expected in that profile.
 - The final answer should include explicit reproduction status, likely root cause, and next diagnostic step.
 
 ## Git Workflow Triage
@@ -346,7 +362,8 @@ Expected behavior:
 
 ## Prompting Tips
 
-- For marketplace installs, start with the explicit `$apple-appdev-workflow:<skill>` invocation and then state the user outcome.
+- For marketplace and public-portal installs, start with the explicit
+  `$apple-appdev-workflow:<skill>` invocation and then state the user outcome.
 - Include platform, framework, and release context when they matter.
 - For scaffolding, always provide or confirm the bundle identifier explicitly.
 - For reviews, say whether you want branch-diff review, release readiness, or architecture critique.

@@ -15,6 +15,9 @@ metadata:
 - Fill `../../references/core-development-context-template.md` for the target Apple app.
 - Use `../../references/copilot-to-skills-mapping.md` to preserve Copilot-style coverage.
 - Load `../../references/apple-mcp-workflow.md`.
+- When the installed artifact is the `public-portal` profile, also load
+  `../../references/public-portal-tool-adapter.md` before selecting an
+  execution provider.
 - When the active host is Xcode CodingAssistant or the installed artifact is the
   `xcode-headless` profile, also load
   `../../references/xcode-headless-tool-adapter.md`.

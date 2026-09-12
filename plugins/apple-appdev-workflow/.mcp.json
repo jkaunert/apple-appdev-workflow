@@ -1,31 +1,19 @@
 {
   "sosumi": {
-    "command": "npx",
-    "args": [
-      "-y",
-      "mcp-remote@0.1.38",
-      "https://sosumi.ai/mcp"
-    ]
+    "url": "https://sosumi.ai/mcp"
   },
-  "memory": {
-    "command": "npx",
+  "apple-appdev-xcodebuildmcp": {
+    "command": "/bin/bash",
     "args": [
-      "-y",
-      "@modelcontextprotocol/server-memory@2026.1.26"
-    ],
-    "env": {
-      "MEMORY_FILE_PATH": "${input:memory_file_path}"
-    }
-  },
-  "XcodeBuildMCP": {
-    "command": "npx",
-    "args": [
-      "-y",
-      "xcodebuildmcp@2.3.2",
+      "./codex-cli/run-xcodebuildmcp.sh",
       "mcp"
     ],
+    "cwd": ".",
+    "startup_timeout_sec": 650,
     "env": {
-      "XCODEBUILDMCP_ENABLED_WORKFLOWS": "coverage,debugging,device,logging,macos,project-discovery,project-scaffolding,session-management,simulator,simulator-management,swift-package,ui-automation,utilities,xcode-ide"
+      "XCODEBUILDMCP_ENABLED_WORKFLOWS": "coverage,debugging,device,macos,project-discovery,project-scaffolding,session-management,simulator,simulator-management,swift-package,ui-automation,utilities,xcode-ide",
+      "XCODEBUILDMCP_SENTRY_DISABLED": "true",
+      "SENTRY_DISABLED": "true"
     }
   }
 }

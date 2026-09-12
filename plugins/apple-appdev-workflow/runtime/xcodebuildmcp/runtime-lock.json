@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "runtime": "xcodebuildmcp",
+  "channel": "qualified-stable",
+  "resolvedFrom": "latest",
+  "qualifiedAt": "2026-08-15T00:00:00Z",
+  "package": {
+    "name": "xcodebuildmcp",
+    "version": "2.7.0",
+    "registry": "https://registry.npmjs.org",
+    "tarball": "https://registry.npmjs.org/xcodebuildmcp/-/xcodebuildmcp-2.7.0.tgz",
+    "integrity": "sha512-z/QISX3BBg5PluvkOlgSEpWQGOnDQ90jmEHyEFLYiqprSUC6x4b9WRN7DyRmp1OXqhLqv5+omy0LBZi8HzaBJQ==",
+    "shasum": "77f773319a90147e699435a11ec0b8b6ff7d03c3",
+    "gitHead": "c79f4eb9b7b96680d5a774acb0ae525416d254fb",
+    "attestations": "https://registry.npmjs.org/-/npm/v1/attestations/xcodebuildmcp@2.7.0"
+  },
+  "provenance": {
+    "repository": "https://github.com/getsentry/XcodeBuildMCP",
+    "ref": "refs/tags/v2.7.0",
+    "commit": "c79f4eb9b7b96680d5a774acb0ae525416d254fb",
+    "workflow": ".github/workflows/release.yml",
+    "workflowRun": "https://github.com/getsentry/XcodeBuildMCP/actions/runs/30014234136/attempts/1",
+    "predicateType": "https://slsa.dev/provenance/v1"
+  },
+  "portable": {
+    "release": "https://github.com/getsentry/XcodeBuildMCP/releases/tag/v2.7.0",
+    "assets": {
+      "darwin-arm64": {
+        "name": "xcodebuildmcp-2.7.0-darwin-arm64.tar.gz",
+        "url": "https://github.com/getsentry/XcodeBuildMCP/releases/download/v2.7.0/xcodebuildmcp-2.7.0-darwin-arm64.tar.gz",
+        "size": 58821590,
+        "sha256": "bd724a2c0e6ffe027b3f46257e66d626149a64cd045f4867124bd683b3cf081a"
+      },
+      "darwin-x64": {
+        "name": "xcodebuildmcp-2.7.0-darwin-x64.tar.gz",
+        "url": "https://github.com/getsentry/XcodeBuildMCP/releases/download/v2.7.0/xcodebuildmcp-2.7.0-darwin-x64.tar.gz",
+        "size": 60051088,
+        "sha256": "f62522c07591a0871601b9fe0c30666bcbe3b1d93dc458eb295c8998ac4fa304"
+      },
+      "darwin-universal": {
+        "name": "xcodebuildmcp-2.7.0-darwin-universal.tar.gz",
+        "url": "https://github.com/getsentry/XcodeBuildMCP/releases/download/v2.7.0/xcodebuildmcp-2.7.0-darwin-universal.tar.gz",
+        "size": 98913780,
+        "sha256": "b4d728d8e60e0c345801826a10c4758d6353ff9ab8ae22ee00507069c3f87e53"
+      }
+    },
+    "licenses": [
+      {
+        "name": "LICENSE",
+        "url": "https://raw.githubusercontent.com/getsentry/XcodeBuildMCP/v2.7.0/LICENSE",
+        "sha256": "fef28fc4165c72b1f0e4ce94654ba44ad7ff7d5d2538b3d01e66e9cc5be3c4f6"
+      },
+      {
+        "name": "THIRD_PARTY_LICENSES",
+        "url": "https://raw.githubusercontent.com/getsentry/XcodeBuildMCP/v2.7.0/THIRD_PARTY_LICENSES",
+        "sha256": "58ed52e487e90aec1aaa00d6dc54da1845b7a60cd2f2be1d690dd02883e64160"
+      },
+      {
+        "name": "THIRD_PARTY_PACKAGE_LICENSES.md",
+        "url": "https://raw.githubusercontent.com/getsentry/XcodeBuildMCP/v2.7.0/THIRD_PARTY_PACKAGE_LICENSES.md",
+        "sha256": "d528ca4572aa083f3ff6bbdc3fda78a299294560daeef81e6e3e05dd495e498e"
+      }
+    ]
+  },
+  "runtimePolicy": {
+    "installScripts": "forbidden",
+    "ambientRuntimeFallback": "forbidden",
+    "telemetryEnvironment": {
+      "XCODEBUILDMCP_SENTRY_DISABLED": "true",
+      "SENTRY_DISABLED": "true"
+    },
+    "enabledWorkflows": [
+      "coverage",
+      "debugging",
+      "device",
+      "macos",
+      "project-discovery",
+      "project-scaffolding",
+      "session-management",
+      "simulator",
+      "simulator-management",
+      "swift-package",
+      "ui-automation",
+      "utilities",
+      "xcode-ide"
+    ],
+    "minimumMcpToolCount": 76,
+    "requiredMcpTools": [
+      "session_show_defaults",
+      "session_set_defaults",
+      "swift_package_build",
+      "swift_package_test",
+      "xcode_ide_list_tools",
+      "xcode_ide_call_tool"
+    ]
+  }
+}
