@@ -7,8 +7,9 @@ This documentation-focused prerelease is rendered from canonical private
 profile. It keeps the beta.1 routing and MCP ownership contract while moving
 maintainer/runtime manuals out of the bundled downstream documentation.
 
-The public distribution commit and prerelease tag will be recorded here after
-the final clean-install and host qualification gates complete.
+The rendered public distribution payload was merged at commit
+`a98e0a87abb16287bf61b96f25caedc887d7a4c3`; the coordinated prerelease tag is
+`v0.2.2-beta.2`.
 
 ### Behavioral payload hashes
 
