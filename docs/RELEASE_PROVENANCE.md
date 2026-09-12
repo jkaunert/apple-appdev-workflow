@@ -9,6 +9,10 @@ distribution profile. The public repository contains generated distribution
 material only; it does not reproduce the private development history or its
 control-plane artifacts.
 
+The rendered public distribution payload was merged at commit
+`9c45882623a8d48a64011df03a0d498e47a0ffd0`; the coordinated prerelease tag is
+`v0.2.2-beta.1`.
+
 The beta adds authored `macos` and Swift Package prompt provenance while
 retaining deterministic, fail-closed UserPromptSubmit routing. It ships the
 plugin-owned XcodeBuildMCP 2.7.0 runtime and direct Sosumi MCP configuration;
