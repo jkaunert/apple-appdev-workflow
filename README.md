@@ -72,7 +72,9 @@ and [MCP setup guide](plugins/apple-appdev-workflow/docs/MCP_SETUP.md).
 ## Release and support
 
 The current public release is
-[v0.2.2-beta.2](https://github.com/jkaunert/apple-appdev-workflow/releases/tag/v0.2.2-beta.2).
+[v0.2.2](https://github.com/jkaunert/apple-appdev-workflow/releases/tag/v0.2.2).
+The optional companion `v0.2.2` build 3 is qualified for Xcode 27.0 RC
+(`27A266a`) and Xcode 26.6 (`17F113`).
 Release engineering and historical qualification records are maintained under
 [`docs/maintainer/`](docs/maintainer/).
 

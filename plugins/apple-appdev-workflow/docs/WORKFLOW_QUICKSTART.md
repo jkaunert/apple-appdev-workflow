@@ -10,7 +10,7 @@ obsolete projection. Public release remains a separate exact-artifact claim.
 Explicit `$apple-appdev-workflow:<skill>` invocation remains the clearest
 operator control and the required fallback when hooks are disabled or untrusted.
 
-The `0.2.2-beta.2` train additionally qualifies authored macOS and Swift Package
+The stable `0.2.2` release additionally qualifies authored macOS and Swift Package
 prompts (`prompt-signal:macos` and `prompt-signal:swift package`) while keeping
 the neutral Xcode workspace fallback. The Marketplace profile owns the locked
 XcodeBuildMCP runtime; the separate Xcode companion remains hook-only.
