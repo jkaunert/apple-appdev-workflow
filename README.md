@@ -15,11 +15,16 @@ when hooks are disabled or restricted.
   review, debugging, accessibility, and release workflows
 - Plugin-owned XcodeBuildMCP with a locked portable runtime
 - Direct Sosumi access for Apple documentation
-- Fail-closed hook behavior with a fully qualified skill fallback
+- A non-interrupting final-output diagnostic, plus explicit skill fallback
 - Compatibility with Codex Desktop and plugin-capable Codex CLI hosts
 
 The hook itself uses `/usr/bin/python3`; it does not require global Node, Malt,
 Homebrew, or npm installation.
+
+The routing hook remains deterministic. The separate final-output check is
+diagnostic by default, so a formatting mismatch cannot interrupt or restart a
+completed response. Release qualification can opt into strict enforcement
+without changing normal installed behavior.
 
 ## Install
 
