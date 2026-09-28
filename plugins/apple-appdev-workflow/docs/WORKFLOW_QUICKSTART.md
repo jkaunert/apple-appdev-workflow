@@ -10,7 +10,7 @@ obsolete projection. Public release remains a separate exact-artifact claim.
 Explicit `$apple-appdev-workflow:<skill>` invocation remains the clearest
 operator control and the required fallback when hooks are disabled or untrusted.
 
-The stable `0.2.2` release additionally qualifies authored macOS and Swift Package
+The `0.2.2-beta.2` train additionally qualifies authored macOS and Swift Package
 prompts (`prompt-signal:macos` and `prompt-signal:swift package`) while keeping
 the neutral Xcode workspace fallback. The Marketplace profile owns the locked
 XcodeBuildMCP runtime; the separate Xcode companion remains hook-only.
@@ -25,6 +25,22 @@ changed hook definition may require renewed trust. If plugin hooks are declined,
 disabled, or restricted by enterprise policy, use an explicit fully qualified
 skill invocation and do not claim deterministic natural-prompt routing. See
 the official [Codex hooks documentation](https://learn.chatgpt.com/docs/hooks).
+
+The `Stop` hook has a separate, deliberately narrow promise. In a normal
+installed session it is non-interrupting: it does not pause, rewrite, or block
+the assistant's response. Qualification harnesses may enable an isolated
+strict check that can request one bounded correction for a malformed final
+route block, but that mode is test evidence only, not ordinary product
+behavior. A strict result must be attributed to the exact trusted artifact and
+host being qualified.
+
+### Tester note
+
+To exercise the default path, verify that a routed turn completes without a
+Stop-hook correction. To exercise qualification behavior, use the dedicated
+strict harness and verify one correction at most, followed by an allowed retry;
+also record hook trust and the exact artifact. Do not use a strict-harness
+block as evidence that a normal Marketplace user will be interrupted.
 
 Materialized production installs are displayed as **Apple Developer Tools**.
 Their stable machine identity is `apple-developer-tools`, so copied textual

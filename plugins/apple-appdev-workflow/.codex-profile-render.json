@@ -1,5 +1,6 @@
 {
   "profile": "marketplace",
+  "artifact_mode": "diagnostic",
   "copied_entries": [
     ".codex-plugin",
     ".mcp.json",
@@ -28,6 +29,5 @@
     "scripts/reconcile_plugin_xcodebuildmcp_registration.py",
     "skills"
   ],
-  "stripped_manifest_keys": [],
-  "plugin_version_override": "0.2.2"
+  "stripped_manifest_keys": []
 }

@@ -65,6 +65,15 @@ hooks are unavailable, use the explicit fallback:
 $apple-appdev-workflow:apple-app-orchestrator Review this Apple project.
 ```
 
+**A response appears blocked or corrected by `Stop`.** A normal Marketplace
+installation uses a non-interrupting Stop guard; it should not delay, rewrite,
+or block an assistant response. A one-retry blocking check is reserved for an
+isolated release-qualification harness. Verify that you are testing the exact
+qualified artifact and host, and that hook trust has not changed. If hooks are
+declined, disabled, modified, or enterprise-restricted, automatic routing and
+Stop checks are unavailable; use the explicit fully qualified skill fallback
+above.
+
 **Memory recall differs between hosts.** Native memory is controlled by the
 active Codex home. Required project and release facts should remain in the
 project’s checked-in documentation.

@@ -29,6 +29,8 @@ QUALIFIED_SKILL_ID = re.compile(
 )
 STATE_COMPONENT = re.compile(r"^[A-Za-z0-9._-]{1,128}$")
 STATE_MAX_AGE_SECONDS = 7 * 24 * 60 * 60
+FINAL_OUTPUT_GUARD_MODE_ENV = "APPLE_APPDEV_FINAL_OUTPUT_GUARD_MODE"
+FINAL_OUTPUT_GUARD_ALIAS_ENV = "APPLE_APPDEV_FINAL_OUTPUT_GUARD"
 QUALIFIED_SKILL_RE = re.compile(
     r"\$?apple-appdev-workflow:[a-z0-9]+(?:-[a-z0-9]+)*"
 )
@@ -155,6 +157,22 @@ LANE_CONTRACTS: Sequence[Tuple[str, Sequence[str]]] = (
         ),
     ),
 )
+
+
+def final_output_guard_mode() -> str:
+    """Return the final-output guard mode without making diagnostics fatal.
+
+    The default is deliberately diagnostic/fail-open.  Qualification callers
+    must opt into strict blocking explicitly; ``qualification`` is accepted as
+    a readable alias for ``strict``.
+    """
+    raw = os.environ.get(FINAL_OUTPUT_GUARD_MODE_ENV, "").strip()
+    if not raw:
+        raw = os.environ.get(FINAL_OUTPUT_GUARD_ALIAS_ENV, "")
+    mode = raw.strip().lower()
+    return "strict" if mode in {
+        "strict", "qualification", "qualify", "true", "1", "on"
+    } else "diagnostic"
 
 
 class RouterContractError(RuntimeError):
@@ -1088,15 +1106,18 @@ def output_for_stop(input_payload: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         if not violations:
             delete_route_state(input_payload)
             return None
-        return {
-            "decision": "block",
-            "reason": correction_reason(
-                violations,
-                required_skills,
-                required_sections,
-                trace["compactionCount"],
-            ),
-        }
+        reason = correction_reason(
+            violations,
+            required_skills,
+            required_sections,
+            trace["compactionCount"],
+        )
+        if final_output_guard_mode() != "strict":
+            # Diagnostic mode performs the complete check but consumes state
+            # and fails open so a Stop hook cannot wedge the host.
+            delete_route_state(input_payload)
+            return None
+        return {"decision": "block", "reason": reason}
     except Exception:
         return None
 

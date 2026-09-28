@@ -15,9 +15,23 @@ const MODULE_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "
 const PLUGIN_PREFIX = "apple-appdev-workflow:";
 const TOP_LEVEL_OWNER = `${PLUGIN_PREFIX}apple-app-orchestrator`;
 const TRANSCRIPT_READ_CHUNK_BYTES = 64 * 1024;
+const FINAL_OUTPUT_GUARD_MODE_ENV = "APPLE_APPDEV_FINAL_OUTPUT_GUARD_MODE";
+const FINAL_OUTPUT_GUARD_ALIAS_ENV = "APPLE_APPDEV_FINAL_OUTPUT_GUARD";
 const APPLE_SKILL_PATH_RE = /apple-appdev-workflow(?:-integration)?(?:[/\\][^/\\\s"'`]+)*[/\\]skills[/\\]([a-z0-9]+(?:-[a-z0-9]+)*)[/\\]SKILL\.md\b/g;
 const QUALIFIED_SKILL_RE = /\$?apple-appdev-workflow:[a-z0-9]+(?:-[a-z0-9]+)*/g;
 const APPLE_SKILL_RE = /\$?apple-[a-z0-9]+(?:-[a-z0-9]+)*/g;
+
+// Stop validation is diagnostic by default so an unavailable or evolving host
+// cannot lose a valid final answer. Qualification runs may opt into the
+// existing one-retry blocking behavior with an explicit strict mode.
+export function finalOutputGuardMode() {
+  const configured = process.env[FINAL_OUTPUT_GUARD_MODE_ENV]?.trim();
+  const raw = configured || process.env[FINAL_OUTPUT_GUARD_ALIAS_ENV] || "";
+  const mode = raw.trim().toLowerCase();
+  return new Set(["strict", "qualification", "qualify", "true", "1", "on"]).has(mode)
+    ? "strict"
+    : "diagnostic";
+}
 
 const LANE_CONTRACTS = new Map([
   [
@@ -464,15 +478,19 @@ export function outputForStop(input) {
       deleteRouteState(input);
       return null;
     }
-    return {
-      decision: "block",
-      reason: correctionReason(
-        violations,
-        requiredSkills,
-        requiredSections,
-        trace.compactionCount,
-      ),
-    };
+    const reason = correctionReason(
+      violations,
+      requiredSkills,
+      requiredSections,
+      trace.compactionCount,
+    );
+    if (finalOutputGuardMode() !== "strict") {
+      // Diagnostic mode still performs the complete check, but consumes state
+      // and fails open so a Stop hook cannot wedge the host.
+      deleteRouteState(input);
+      return null;
+    }
+    return { decision: "block", reason };
   } catch {
     // Final-answer enforcement must fail open on internal errors.
     return null;
